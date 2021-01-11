@@ -61,17 +61,10 @@
                     placeholder="Password"
                   />
                 </div>
-                <div class="row">
-                  <div class="col-6">
-                    <button class="btn btn-primary px-4" type="button">
-                      Login
-                    </button>
-                  </div>
-                  <div class="col-6 text-right">
-                    <button class="btn btn-link px-0" type="button">
-                      Forgot password?
-                    </button>
-                  </div>
+                <div class="row justify-content-center">
+                  <button class="btn btn-primary px-4" type="button" @click="login">
+                    Login
+                  </button>
                 </div>
               </div>
             </div>
@@ -81,6 +74,18 @@
     </div>
   </div>
 </template>
+
+<script>
+import { router } from '../../helpers/router';
+
+export default {
+  methods: {
+    login() {
+      router.push('admin');
+    }
+  }
+}
+</script>
 
 <style scoped>
 .c-app {

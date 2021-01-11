@@ -1,13 +1,8 @@
 <template>
-  <login-page></login-page>
+  <div>
+    <router-view></router-view>
+  </div>
 </template>
 
-<script> 
-import Login from './components/pages/Login.vue';
-export default {
-  components: {
-    loginPage: Login
-  }
-}
-</script>
+
 

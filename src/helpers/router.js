@@ -20,6 +20,26 @@ export const router = new Router({
     {
       path: "/admin",
       component: AdminPage,
+      children: [
+        {
+          path: "doctor",
+          component: () => import("../components/pages/DoctorPage"),
+          children: [
+            {
+              path: "create",
+              component: () => import("../components/pages/CreateDoctorPage"),
+            },
+          ],
+        },
+        {
+          path: "user",
+          component: () => import("../components/pages/UserPage"),
+        },
+        {
+          path: "medicine",
+          component: () => import("../components/pages/MedicinePage"),
+        },
+      ],
     },
 
     // otherwise redirect to home

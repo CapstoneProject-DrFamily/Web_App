@@ -1,90 +1,52 @@
 <template>
-  <div class="c-app flex-row align-items-center">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-4">
-          <div class="card-group">
-            <div class="card p-4">
-              <div class="card-body">
-                <div class="d-flex justify-content-center">
-                  <img
-                    class="profile-img"
-                    src="https://cdn2.iconfinder.com/data/icons/users-6/100/USER2-512.png"
-                    alt=""
-                  />
-                </div>
-                <br />
-                <p class="text-muted">Sign In to your account</p>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-person-square"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                        <path
-                          d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm12 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1v-1c0-1-1-4-6-4s-6 3-6 4v1a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12z"
-                        />
-                      </svg>
-                    </span>
-                  </div>
-                  <input
-                    class="form-control"
-                    type="text"
-                    placeholder="Username"
-                  />
-                </div>
-                <div class="input-group mb-4">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        class="bi bi-key-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
-                        /></svg
-                    ></span>
-                  </div>
-                  <input
-                    class="form-control"
-                    type="password"
-                    placeholder="Password"
-                  />
-                </div>
-                <div class="row justify-content-center">
-                  <button class="btn btn-primary px-4" type="button" @click="login">
-                    Login
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+   <v-app id="inspire">
+      <v-content>
+         <v-container fluid fill-height class="c-app">
+            <v-layout align-center justify-center>
+               <v-flex xs12 sm8 md4>
+                  <v-card class="elevation-12">
+                     <v-toolbar dark color="primary">
+                        <v-toolbar-title>Login form</v-toolbar-title>
+                     </v-toolbar>
+                     <v-card-text>
+                        <v-form>
+                           <v-text-field
+                              prepend-icon="mdi-account"
+                              name="login"
+                              label="Login"
+                              type="text"
+                           ></v-text-field>
+                           <v-text-field
+                              id="password"
+                              prepend-icon="mdi-lock"
+                              name="password"
+                              label="Password"
+                              type="password"
+                           ></v-text-field>
+                        </v-form>
+                     </v-card-text>
+                     <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" to="/admin">Login</v-btn>
+                     </v-card-actions>
+                  </v-card>
+               </v-flex>
+            </v-layout>
+         </v-container>
+      </v-content>
+   </v-app>
 </template>
 
 <script>
-import { router } from '../../helpers/router';
+import { router } from "../../helpers/router";
 
 export default {
   methods: {
     login() {
-      router.push('admin');
-    }
-  }
-}
+     router.push("admin");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -105,4 +67,6 @@ export default {
   -webkit-border-radius: 50%;
   border-radius: 50%;
 }
+/* 
+@import 'https://unpkg.com/@coreui/coreui/dist/css/coreui.min.css'; */
 </style>

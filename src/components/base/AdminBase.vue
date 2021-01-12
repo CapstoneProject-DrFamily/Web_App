@@ -1,16 +1,23 @@
 <template>
-    <div class="c-app">
-        <the-header></the-header>
-    </div>
+  <v-app>
+      <app-bar></app-bar>
+        <drawer></drawer>
+        <content-page></content-page>
+  </v-app>
 </template>
 
 
 <script>
-import TheHeader from './TheHeader.vue';
+import AppBar from './AppBar.vue'
+import Drawer from './Drawer.vue'
+import ContentPage from './ContentPage.vue'
 
 export default {
     components: {
-        theHeader: TheHeader
+        Drawer,
+        AppBar,
+        ContentPage
     }
 }
 </script>
+

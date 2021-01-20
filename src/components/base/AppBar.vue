@@ -1,6 +1,6 @@
 <template>
   <v-app-bar absolute app height="75" color="grey lighten-4" flat>
-    <v-btn class="mr-3" elevation="1" fab small>
+    <v-btn class="mr-3" elevation="1" fab small @click="getDrawer">
       <v-icon> mdi-dots-vertical </v-icon>
     </v-btn>
     <v-toolbar-title
@@ -28,3 +28,14 @@
     </v-tooltip>
   </v-app-bar>
 </template>
+
+<script>
+export default {
+  methods: {
+    getDrawer() {
+      this.$store.state.drawerOn = !this.$store.state.drawerOn;
+      console.log(this.$store.state.drawerOn);
+    },
+  },
+};
+</script>

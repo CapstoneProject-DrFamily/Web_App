@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app width="260" dark>
+  <v-navigation-drawer app width="260" dark v-model="this.$store.state.drawerOn">
     <v-list dense nav>
       <v-list-item class="pt-4">
         <v-list-item-avatar class="align-self-center" color="white" contain>

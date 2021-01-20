@@ -17,7 +17,7 @@ export default {
         Drawer,
         AppBar,
         ContentPage
-    }
+    },
 }
 </script>
 

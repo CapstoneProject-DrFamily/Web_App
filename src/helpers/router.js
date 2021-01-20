@@ -23,21 +23,21 @@ export const router = new Router({
       children: [
         {
           path: "doctor",
-          component: () => import("../components/pages/DoctorPage"),
+          component: () => import("../components/pages/doctor/DoctorPage"),
           children: [
             {
               path: "create",
-              component: () => import("../components/pages/CreateDoctorPage"),
+              component: () => import("../components/pages/doctor/CreateDoctorForm"),
             },
           ],
         },
         {
           path: "user",
-          component: () => import("../components/pages/UserPage"),
+          component: () => import("../components/pages/user/UserPage"),
         },
         {
           path: "medicine",
-          component: () => import("../components/pages/MedicinePage"),
+          component: () => import("../components/pages/medicine/MedicinePage"),
         },
       ],
     },

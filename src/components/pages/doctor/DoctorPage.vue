@@ -1,30 +1,67 @@
 <template>
   <v-container fluid pt-8>
+    <v-row no-gutters justify="center">
+      <v-col cols="8">
+        <v-text-field
+          placeholder="Search"
+          prepend-inner-icon="mdi-magnify"
+          filled
+          dense
+          color="blue"
+          solo
+        ></v-text-field>
+      </v-col>
+      <v-col cols="1">
+        <div class="pt-1 pl-1">
+          <v-btn icon>
+            <v-icon>mdi-magnify</v-icon>
+          </v-btn>
+        </div>
+      </v-col>
+    </v-row>
+
     <doctor-form></doctor-form>
+
     <v-simple-table class="elevation-1">
       <template v-slot:default>
         <thead>
           <tr>
+            <th class="text-left">Image</th>
             <th class="text-left">Name</th>
-            <th class="text-left">Email</th>
-            <th class="text-left">Address</th>
             <th class="text-left">Speciality</th>
-            <th class="text-left">Description</th>
+            <th class="text-left">Email</th>
+
+            <th class="text-left"></th>
             <th class="text-left"></th>
             <th class="text-left"></th>
           </tr>
         </thead>
+
         <tbody>
-          <tr v-for="item in desserts" :key="item.name">
-            <td>{{ item.name }}</td>
-            <td>{{ item.calories }}</td>
-            <td>{{ item.calories }}</td>
-            <td>{{ item.calories }}</td>
-            <td>{{ item.calories }}</td>
+          <tr v-for="doctor in doctors" :key="doctor.name">
+            <td class="pt-6 pb-6">
+              <v-img
+                src="https://picsum.photos/id/11/500/300"
+                width="100"
+                height="100"
+              ></v-img>
+            </td>
+            <td>{{ doctor.name }}</td>
+            <td>{{ doctor.email }}</td>
+            <td>{{ doctor.email }}</td>
             <td>
-              <v-btn tile color="success" small>
-                <v-icon> mdi-pencil </v-icon>
-              </v-btn>
+              <div class="text-center">
+                <v-btn tile color="info" small>
+                  <v-icon> mdi-information-outline </v-icon>
+                </v-btn>
+              </div>
+            </td>
+            <td>
+              <div class="text-center">
+                <v-btn tile color="success" small>
+                  <v-icon> mdi-pencil </v-icon>
+                </v-btn>
+              </div>
             </td>
             <td>
               <div class="text-center">
@@ -45,13 +82,9 @@
 
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="grey" text >
-                        Cancel
-                      </v-btn>
+                      <v-btn color="grey" text> Cancel </v-btn>
 
-                      <v-btn color="primary" text>
-                        I accept
-                      </v-btn>
+                      <v-btn color="primary" text> I accept </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -62,7 +95,15 @@
       </template>
     </v-simple-table>
 
-    <v-row justify="center">
+    <div class="text-center pt-6" v-if="loading">
+      <v-progress-circular
+        :size="50"
+        color="primary"
+        indeterminate
+      ></v-progress-circular>
+    </div>
+
+    <v-row justify="center" v-if="!loading">
       <v-col cols="8">
         <v-container class="max-width">
           <v-pagination v-model="page" class="my-4" :length="15"></v-pagination>
@@ -76,27 +117,33 @@
 import DoctorForm from "./CreateDoctorForm.vue";
 
 export default {
+  mounted() {
+    this.fetchDoctor();
+  },
+
   data() {
     return {
+      loading: false,
       page: 1,
       confirmDelete: false,
-      desserts: [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-        },
-      ],
+      doctors: [],
     };
   },
   methods: {
+    async fetchDoctor() {
+      this.loading = true;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      for (let i = 1; i < 6; i++) {
+        let doctor = {
+          name: "Bác sĩ " + i,
+          email: "bacsi" + i + "@doctor.com",
+        };
+        this.doctors.push(doctor);
+      }
+      this.loading = false;
+    },
+
     addDoctor() {},
     delete(id) {
       console.log(id);

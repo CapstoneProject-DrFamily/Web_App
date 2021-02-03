@@ -8,6 +8,15 @@
               <v-toolbar dark color="primary">
                 <v-toolbar-title>Login form</v-toolbar-title>
               </v-toolbar>
+
+              <v-row justify="center">
+                <v-col md="8" sm="8" class="pt-10">
+                  <v-alert :value="alert" type="error"
+                    >Login Failed</v-alert
+                  ></v-col
+                >
+              </v-row>
+
               <v-card-text>
                 <v-form>
                   <v-text-field
@@ -44,28 +53,28 @@
 <script>
 import { router } from "../../helpers/router";
 import axios from "axios";
+import APIHelper from "../../helpers/api";
 
 export default {
   data() {
     return {
       username: "",
       password: "",
+      alert: false,
     };
   },
   methods: {
     async login() {
+      var failed = false;
       this.$isLoading(true);
-      await new Promise((resolve) => setTimeout(resolve,2000));
+
       const loginData = {
         username: this.username,
         password: this.password,
       };
 
-      axios
-        .post(
-          "https://capstoneapi-dev.azurewebsites.net/api/v1/Auth",
-          loginData
-        )
+      await axios
+        .post(APIHelper.getAPIDefault() + "api/v1/Auth", loginData)
         .then(function (response) {
           console.log(response.status);
           if (response.status == 200) {
@@ -76,9 +85,12 @@ export default {
           }
         })
         .catch(function (error) {
+          failed = true;
           console.log(error);
-          console.log("fail");
         });
+      if (failed) {
+        this.alert = true;
+      }
       this.$isLoading(false);
     },
   },

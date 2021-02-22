@@ -4,6 +4,7 @@ import Router from "vue-router";
 import LoginPage from "../components/pages/Login.vue";
 import AdminPage from "../components/base/AdminBase.vue";
 
+
 Vue.use(Router);
 
 export const router = new Router({
@@ -24,11 +25,13 @@ export const router = new Router({
         {
           path: "doctor",
           component: () => import("../components/pages/doctor/DoctorPage"),
+          
           children: [
             {
               path: "create",
-              component: () => import("../components/pages/doctor/CreateDoctorForm"),
+              component: () => import("../components/pages/doctor/CreateDoctorForm"), 
             },
+           
           ],
         },
         {

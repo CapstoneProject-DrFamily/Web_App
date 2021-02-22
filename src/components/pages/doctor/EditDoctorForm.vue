@@ -1,12 +1,11 @@
 <template>
-  <div class="text-center">
+  <div class="text-center pt-6">
     <v-dialog width="500" v-model="show">
       <template v-slot:activator="{ on, attrs }">
         <v-row justify="end" class="mr-4 mb-4">
           <div class="my-2">
-            <v-btn color="primary" v-bind="attrs" v-on="on">
-              <v-icon>mdi-plus</v-icon>
-              Add Doctor
+            <v-btn tile color="success" v-bind="attrs" v-on="on">
+              <v-icon>mdi-pencil </v-icon>
             </v-btn>
           </div>
         </v-row>
@@ -18,7 +17,7 @@
       <v-card>
         <row>
           <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-            Create New Doctor
+            Update Doctor
           </p>
         </row>
         <v-card-text>
@@ -48,7 +47,8 @@
               <v-text-field
                 class="pt-6"
                 solo
-                v-model="username"
+                v-model="doctor.profile.fullName"
+                readonly
                 label="Username (Your phone number)*"
                 prepend-icon="mdi-account-box"
                 required
@@ -57,13 +57,13 @@
               <v-text-field
                 class="pt-4"
                 solo
-                v-model="fullname"
+                v-model="doctor.profile.fullName"
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
               ></v-text-field>
               <v-radio-group
-                v-model="gender"
+                v-model="doctor.profile.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -82,7 +82,7 @@
                   <v-text-field
                     class="pt-4"
                     solo
-                    v-model="date"
+                    v-model="doctor.profile.birthday"
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -101,10 +101,19 @@
                   </v-btn>
                 </v-date-picker>
               </v-dialog>
+
               <v-text-field
                 class="pt-4"
                 solo
-                v-model="email"
+                v-model="doctor.profile.phone"
+                label="Phone*"
+                prepend-icon="mdi-phone"
+                required
+              ></v-text-field>
+              <v-text-field
+                class="pt-4"
+                solo
+                v-model="doctor.profile.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -113,7 +122,7 @@
               <v-text-field
                 class="pt-4"
                 solo
-                v-model="idCard"
+                v-model="doctor.profile.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -125,7 +134,7 @@
               <v-text-field
                 class="pt-6"
                 solo
-                v-model="degree"
+                v-model="doctor.degree"
                 label="Degree*"
                 prepend-icon="mdi-license"
                 required
@@ -133,7 +142,7 @@
               <v-text-field
                 class="pt-4"
                 solo
-                v-model="experience"
+                v-model="doctor.experience"
                 label="Experience*"
                 prepend-icon="mdi-trophy-award"
                 required
@@ -144,7 +153,7 @@
                 :items="specialities"
                 item-text="name"
                 item-value="specialtyId"
-                v-model="speciality"
+                v-model="doctor.specialty.specialtyId"
                 label="Speciality*"
                 solo
               ></v-select>
@@ -154,11 +163,11 @@
                 label="School*"
                 prepend-icon="mdi-school"
                 required
-                v-model="school"
+                v-model="doctor.school"
               ></v-text-field>
               <v-textarea
                 class="pt-4"
-                v-model="description"
+                v-model="doctor.description"
                 label="Description*"
                 solo
                 prepend-icon="mdi-account-details"
@@ -181,9 +190,9 @@
                   color="success"
                   class="mr-4"
                   type="submit"
-                  v-on:click="createDoctor()"
+                  v-on:click="updateDoctor()"
                 >
-                  Create
+                  Saved
                 </v-btn>
               </v-row>
             </v-form>
@@ -203,23 +212,14 @@ import APIHelper from "../../../helpers/api";
 export default {
   mounted() {
     this.fetchSpecialities();
+    console.log(this.doctor);
   },
-
+  props: ["doctor"],
   data() {
     return {
-      username: null,
-      fullname: null,
-      gender: null,
-      date: new Date().toISOString().substr(0, 10),
-      phone: null,
-      email: null,
-      idCard: null,
 
-      degree: null,
-      experience: null,
-      description: null,
-      school: null,
-      speciality: null,
+      date: new Date().toISOString().substr(0, 10),
+
 
       specialities: [],
       modal: false,
@@ -231,10 +231,8 @@ export default {
   },
   methods: {
     async fetchSpecialities() {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-
       var response = await axios
-        .get(APIHelper.getAPIDefault() + "api/v1/Specialty")
+        .get(APIHelper.getAPIDefault() + "/api/v1/Specialty")
         .catch(function (error) {
           console.log(error);
         });
@@ -244,96 +242,28 @@ export default {
           this.specialities.push(response.data[i]);
         }
       }
+    
+      
     },
 
-    async createDoctor() {
-      var isCreated = false;
-
+    async updateDoctor() {
+            // console.log(this.doctor.specialty.name);
       this.loading = true;
-      var imgURL = null;
       if (this.imageData != null) {
-        imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
+        var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
+        this.resetForm();
+        this.show = false;
       }
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      let data = {
-        fullname: this.fullname,
-        birthday: this.date,
-        gender: this.gender,
-        phone: this.username,
-        image: imgURL,
-        email: this.email,
-        idCard: this.idCard,
-      };
-
-      var response = await axios
-        .post(APIHelper.getAPIDefault() + "api/v1/Profiles", data)
-        .catch(function (error) {
-          console.log(error);
-        });
-      console.log(response);
-
-      if (response.status == 201) {
-        var profileId = response.data.profileId;
-        let data = {
-          disabled: false,
-          insBy: "Admin",
-          username: this.username,
-          password: null,
-          roleId: 3,
-          profileId: profileId,
-          waiting: false,
-        };
-        response = await axios
-          .post(APIHelper.getAPIDefault() + "api/v1/Users", data)
-          .catch(function (error) {
-            console.log(error);
-          });
-        console.log(response);
-
-        if (response.status == 201) {
-          let data = {
-            degree: this.degree,
-            experience: this.experience,
-            description: this.description,
-            specialtyId: this.speciality,
-            profileId: profileId,
-            school: this.school,
-          };
-          response = await axios
-            .post(APIHelper.getAPIDefault() + "api/v1/Doctors", data)
-            .catch(function (error) {
-              console.log(error);
-            });
-            if(response.status == 201) {
-               console.log(response);
-              isCreated = true;
-            }
-        }
-      }
-
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      this.resetForm();
       this.show = false;
-      this.$emit("created", isCreated);
+      this.$emit("created", true);
       this.loading = false;
     },
     resetForm() {
       this.imageData = null;
       this.imagePreview = defaultImage;
-
-      this.username = null;
-      this.fullname = null;
-      this.gender = null;
-      this.date = new Date().toISOString().substr(0, 10);
-      this.phone = null;
-      this.email = null;
-      this.idCard = null;
-      this.degree = null;
-      this.experience = null;
-      this.description = null;
-      this.school = null;
-      this.speciality = null;      
     },
   },
   watch: {
@@ -351,6 +281,7 @@ export default {
         this.imagePreview = defaultImage;
       }
     },
+
   },
 };
 </script>

@@ -3,6 +3,7 @@ import Router from "vue-router";
 
 import LoginPage from "../components/pages/Login.vue";
 import AdminPage from "../components/base/AdminBase.vue";
+import DoctorBase from "../components/pages/doctor/DoctorBase.vue";
 
 
 Vue.use(Router);
@@ -24,23 +25,32 @@ export const router = new Router({
       children: [
         {
           path: "doctor",
-          component: () => import("../components/pages/doctor/DoctorPage"),
+          component: DoctorBase,
           
           children: [
             {
-              path: "create",
-              component: () => import("../components/pages/doctor/CreateDoctorForm"), 
+              path: "active",
+              component: () => import("../components/pages/doctor/DoctorPage"), 
+              
             },
-           
+            {
+              path: "inactive",
+              component: () => import("../components/pages/doctor/DoctorWaitingPage"), 
+              
+            },
           ],
         },
         {
-          path: "user",
-          component: () => import("../components/pages/user/UserPage"),
+          path: "patient",
+          component: () => import("../components/pages/patient/PatientPage"),
         },
         {
           path: "medicine",
           component: () => import("../components/pages/medicine/MedicinePage"),
+        },
+        {
+          path: "symptom",
+          component: () => import("../components/pages/symptom/SymptomPage"),
         },
       ],
     },

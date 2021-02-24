@@ -1,11 +1,11 @@
 <template>
   <div class="text-center pt-6">
-    <v-dialog width="500" v-model="show" persistent>
+    <v-dialog width="500" v-model="show">
       <template v-slot:activator="{ on, attrs }">
-        <v-row justify="end" class="mr-4 mb-4">
+        <v-row justify="start" class="mr-4 mb-4">
           <div class="my-2">
-            <v-btn tile color="success" v-bind="attrs" v-on="on">
-              <v-icon>mdi-pencil </v-icon>
+            <v-btn tile color="info" v-bind="attrs" v-on="on">
+              <v-icon>mdi-account-details</v-icon>
             </v-btn>
           </div>
         </v-row>
@@ -17,7 +17,7 @@
       <v-card>
         <row>
           <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-            Update Doctor
+            Doctor Info
           </p>
         </row>
         <v-card-text>
@@ -37,16 +37,6 @@
               :src="imagePreview"
             ></v-img>
           </v-row>
-          <v-file-input
-            @change="onChange = true"
-            class="pt-10"
-            v-model="imageData"
-            label="Select your image"
-            solo
-            outlined
-            dense
-            accept="image/png, image/jpeg, image/bmp, image/jpg"
-          ></v-file-input>
         </v-card-text>
 
         <v-card-text>
@@ -54,27 +44,28 @@
             <v-form @submit.prevent>
               <div class="font-weight-bold customHeader">Account Detail</div>
               <v-text-field
-                @change="onChange = true"
                 class="pt-6"
-                solo
-                v-model="temporaryData.profile.users[0].username"
+                filled
+                rounded
                 readonly
-                label="Username (Your phone number)*"
+                v-model="temporaryData.profile.users[0].username"
+                label="Username"
                 prepend-icon="mdi-account-box"
                 required
-                disabled
               ></v-text-field>
 
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                solo
+                  filled
+                rounded
+                readonly
                 v-model="temporaryData.profile.fullName"
                 prepend-icon="mdi-account"
-                label="Full Name*"
-                required
+                label="Name"
               ></v-text-field>
               <v-radio-group
+                readonly
                 @change="onChange = true"
                 v-model="temporaryData.profile.gender"
                 row
@@ -95,12 +86,14 @@
                   <v-text-field
                     @change="onChange = true"
                     class="pt-4"
-                    solo
+                     filled
+                rounded
+                readonly
                     v-model="temporaryData.profile.birthday"
-                    label="Birthday*"
+                    label="Birthday"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
-                    readonly
+                  
                     v-bind="attrs"
                     v-on="on"
                   ></v-text-field>
@@ -126,16 +119,20 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                solo
+                  filled
+                rounded
+                readonly
                 v-model="temporaryData.profile.phone"
-                label="Phone*"
+                label="Phone"
                 prepend-icon="mdi-phone"
                 required
               ></v-text-field>
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                solo
+                  filled
+                rounded
+                readonly
                 v-model="temporaryData.profile.email"
                 label="Email"
                 type="email"
@@ -145,7 +142,9 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                solo
+                  filled
+                rounded
+                readonly
                 v-model="temporaryData.profile.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
@@ -158,18 +157,22 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"
-                solo
+                  filled
+                rounded
+                readonly
                 v-model="temporaryData.degree"
-                label="Degree*"
+                label="Degree"
                 prepend-icon="mdi-license"
                 required
               ></v-text-field>
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                solo
+                  filled
+                rounded
+                readonly
                 v-model="temporaryData.experience"
-                label="Experience*"
+                label="Experience"
                 prepend-icon="mdi-trophy-award"
                 required
               ></v-text-field>
@@ -181,14 +184,18 @@
                 item-text="name"
                 item-value="specialtyId"
                 v-model="temporaryData.specialtyId"
-                label="Speciality*"
-                solo
+                label="Speciality"
+                  filled
+                rounded
+                readonly              
               ></v-select>
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                solo
-                label="School*"
+                  filled
+                rounded
+                readonly
+                label="School"
                 prepend-icon="mdi-school"
                 required
                 v-model="temporaryData.school"
@@ -197,29 +204,31 @@
                 @change="onChange = true"
                 class="pt-4"
                 v-model="temporaryData.description"
-                label="Description*"
-                solo
+                label="Description"
+                  filled
+                rounded
+                readonly
                 prepend-icon="mdi-account-details"
                 required
               ></v-textarea>
 
               <v-row justify="center">
-                   <v-btn
+                <v-btn
                   color="info"
                   class="mr-4"
-                  v-on:click="Reset()"
+                  v-on:click="closeDialog()"
                   v-if="!loading"
                 >
-                  Reset
+                  Close
                 </v-btn>
 
                 <v-btn
                   color="error"
                   class="mr-4"
-                  v-on:click="Cancel()"
+                  v-on:click="denyDoctor()"
                   v-if="!loading"
                 >
-                  Cancel
+                  Deny
                 </v-btn>
 
                 <v-btn
@@ -228,9 +237,9 @@
                   color="success"
                   class="mr-4"
                   type="submit"
-                  v-on:click="updateDoctor()"
+                  v-on:click="approveDoctor()"
                 >
-                  Saved
+                  Approve
                 </v-btn>
               </v-row>
             </v-form>
@@ -243,7 +252,6 @@
 
 <script>
 import defaultImage from "../../../assets/placeholder-img.jpg";
-import CommonHelper from "../../../helpers/common";
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
 
@@ -266,27 +274,15 @@ export default {
     };
   },
   methods: {
-    Reset() {
-      this.onChange = false;
-       this.temporaryData = JSON.parse(JSON.stringify(this.doctor));
-    },
-
-    Cancel() {
-      if (this.onChange) {
-        this.$confirm("Do you really want to exit? Your change will all lost.").then((res) => {
-          if (res) {
-            this.temporaryData = JSON.parse(JSON.stringify(this.doctor));
-            this.show = false;
-          }
-        });
-      } else {
-        this.show = false;
-      }
- 
-    },
-    changeSaved() {
-      console.log(this.onChange);
-    },
+      denyDoctor() {
+          console.log('deny');
+      },
+      closeDialog() {
+          this.show = false;
+      },
+      approveDoctor() {
+          console.log('approved');
+      },
     async fetchSpecialities() {
       var response = await axios
         .get(APIHelper.getAPIDefault() + "Specialty")
@@ -300,65 +296,6 @@ export default {
         }
       }
     },
-
-    async updateDoctor() {
-      var isUpdated = false;
-
-      this.loading = true;
-      if (this.imageData != null) {
-        var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
-        console.log(imgURL);
-        this.doctor.profile.image = imgURL;
-      }
-
-      let profileDetail = {
-        profileId: this.temporaryData.profileId,
-        fullname: this.temporaryData.profile.fullName,
-        birthday: this.temporaryData.profile.birthday,
-        gender: this.temporaryData.profile.gender,
-        phone: this.temporaryData.profile.phone,
-        image: this.temporaryData.profile.image,
-        email: this.temporaryData.profile.email,
-        idCard: this.temporaryData.profile.idCard,
-      };
-
-      let profileDoctor = {
-        doctorId: this.temporaryData.doctorId,
-        degree: this.temporaryData.degree,
-        experience: this.temporaryData.experience,
-        description: this.temporaryData.description,
-        specialtyId: this.temporaryData.specialtyId,
-        profileId: this.temporaryData.profileId,
-        school: this.temporaryData.school,
-      };
-
-      var response = await axios
-        .put(APIHelper.getAPIDefault() + "Doctors", profileDoctor)
-        .catch(function (error) {
-          console.log(error);
-        });
-
-      response = await axios
-        .put(APIHelper.getAPIDefault() + "Profiles", profileDetail)
-        .catch(function (error) {
-          console.log(error);
-        });
-
-      if (response.status == 200) {
-        isUpdated = true;
-      }
-
-      this.resetForm();
-      this.show = false;
-      this.$emit("updated", isUpdated);
-      this.loading = false;
-
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-    },
-    resetForm() {
-      this.imageData = null;
-      this.imagePreview = defaultImage;
-    },
   },
   watch: {
     imageData: function () {
@@ -371,7 +308,6 @@ export default {
         // Start the reader job - read file as a data url (base64 format)
         reader.readAsDataURL(this.imageData);
       } else {
-        
         this.imageData = null;
         this.imagePreview = defaultImage;
       }

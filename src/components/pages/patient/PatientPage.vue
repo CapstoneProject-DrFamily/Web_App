@@ -33,14 +33,14 @@
       </v-col>
       <v-col cols="1">
         <div class="pt-1 pl-1">
-          <v-btn icon >
+          <v-btn icon>
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </div>
       </v-col>
     </v-row>
 
-    <doctor-form @created="addDoctor"></doctor-form>
+    <create-patient-form @created="addDoctor"></create-patient-form>
 
     <v-simple-table class="elevation-1">
       <template v-slot:default>
@@ -48,7 +48,7 @@
           <tr>
             <th class="text-left">Image</th>
             <th class="text-left">Name</th>
-            <th class="text-left">Speciality</th>
+            <th class="text-left">Address</th>
             <th class="text-left">Email</th>
 
             <th class="text-left"></th>
@@ -57,30 +57,23 @@
         </thead>
 
         <tbody>
-          <tr v-for="doctor in doctors" :key="doctor.doctorId">
+          <tr v-for="patient in patients" :key="patient.patientId">
             <td class="pt-6 pb-6">
-              <v-img
-                :src="doctor.profile.image"
-                width="100"
-                height="100"
-              ></v-img>
+              <v-img :src="patient.profile.image" width="100" height="100"></v-img>
             </td>
-            <td>{{ doctor.profile.fullName }}</td>
-            <td>{{ doctor.specialty.name }}</td>
-            <td>{{ doctor.profile.email }}</td>
+            <td>{{ patient.profile.fullname }}</td>
+            <td>{{ patient.profile.email }}</td>
+            <td>{{ patient.profile.idCard }}</td>
 
             <td>
-              <edit-doctor-form
-                :doctor="doctor"
-                @updated="updateDoctor"
-              ></edit-doctor-form>
+              <edit-patient-form></edit-patient-form>
             </td>
             <td>
               <div class="text-center">
                 <v-dialog
                   width="500"
                   :retain-focus="false"
-                  v-model="doctor.dltDialog.isShow"
+                  v-model="patient.dltDialog.isShow"
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn tile color="error" v-bind="attrs" v-on="on">
@@ -90,7 +83,7 @@
 
                   <v-card>
                     <v-card-title class="headline red lighten-1">
-                      Confirm delete this doctor
+                      Confirm delete this patient
                     </v-card-title>
 
                     <v-card-text>
@@ -102,7 +95,7 @@
                       <v-btn
                         color="grey"
                         text
-                        @click="doctor.dltDialog.isShow = false"
+                        @click="patient.dltDialog.isShow = false"
                       >
                         Cancel
                       </v-btn>
@@ -137,11 +130,7 @@
     <v-row justify="center" v-if="!loading">
       <v-col cols="8">
         <v-container class="max-width">
-          <v-pagination
-            v-model="page"
-            class="my-4"
-            :length="totalPage"
-          ></v-pagination>
+          <v-pagination v-model="page" class="my-4" :length="10"></v-pagination>
         </v-container>
       </v-col>
     </v-row>
@@ -149,15 +138,15 @@
 </template>
 
 <script>
-import DoctorForm from "./CreateDoctorForm.vue";
-import EditDoctorForm from "./EditDoctorForm.vue";
+import CreatePatientForm from "./CreatePatientForm.vue";
+import EditPatientForm from "./EditPatientForm.vue";
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
 // import CommonHelper from '../../../helpers/common';
 
 export default {
   mounted() {
-    this.fetchDoctor(this.page, this.pageSize, this.searchValue);
+    this.fetchPatient();
   },
 
   data() {
@@ -167,108 +156,55 @@ export default {
       message: ``,
       isDeleting: false,
       loading: false,
-
-      doctors: [],
       page: 1,
-      pageSize: 10,
-      totalPage: null,
-      searchBoxValue: null,
-      searchValue: null,
+
+      patients: [],
     };
   },
   methods: {
-    async fetchDoctor(page, pageSize, value) {
+    async fetchPatient() {
       this.loading = true;
-      this.doctors = [];
+      this.patients = [];
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      var url =
-        value == null
-          ? APIHelper.getAPIDefault() +
-            "Doctors/paging?PageIndex=" +
-            page +
-            "&PageSize=" +
-            pageSize
-          : APIHelper.getAPIDefault() +
-            "Doctors/paging?PageIndex=" +
-            page +
-            "&PageSize=" +
-            pageSize +
-            "&SearchValue=" +
-            value;
 
-      var response = await axios.get(url).catch(function (error) {
-        console.log(error);
-      });
+      var response = await axios
+        .get(APIHelper.getAPIDefault() + "Patients")
+        .catch(function (error) {
+          console.log(error);
+        });
 
       if (response.status == 200) {
-        this.totalPage = response.data.totalPages;
-        for (let i = 0; i < response.data.doctors.length; i++) {
-          if (!response.data.doctors[i].profile.users[0].waiting) {
-            let name = "dialog" + response.data.doctors[i].doctorId;
-            let dltDialog = { name: name, isShow: false };
-            response.data.doctors[i].dltDialog = dltDialog;
-            response.data.doctors[i].profile.birthday = response.data.doctors[
-              i
-            ].profile.birthday.substring(0, 10);
-            this.doctors.push(response.data.doctors[i]);
-          }
+        for (let i = 0; i < response.data.length; i++) {
+          let name = "dialog" + response.data[i].patientId;
+          let dltDialog = { name: name, isShow: false };
+          response.data[i].dltDialog = dltDialog;
+          // let data = response.data[i];
+          // console.log(data);
+          this.patients.push(response.data[i]);
         }
-        console.log(this.doctors.length);
       }
       this.loading = false;
     },
-    updateDoctor(isUpdated) {
-      if (isUpdated) {
-        if (this.page != 1) {
-          this.page = 1;
-        } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
-        }
-        this.setSnackbar("Update Doctor Successful", "success");
-      } else {
-        this.setSnackbar("Update Doctor Failed", "error");
-      }
-    },
+
     addDoctor(isSuccess) {
       if (isSuccess) {
-         if (this.page != 1) {
-          this.page = 1;
-        } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
-        }
+        this.fetchDoctor();
         this.setSnackbar("Add Doctor Successful", "success");
       } else {
         this.setSnackbar("Add Doctor Failed", "error");
       }
     },
     async deleteDoctor(id) {
-      var success = false;
       this.isDeleting = true;
-
-      // console.log(id);
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
-      var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Doctors/" + id)
-        .catch(function (error) {
-          console.log(error);
-        });
-      console.log(response.status);
-      if (response.status == 204) {
-        success = true;
-      }
+      console.log(id);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       this.doctors.find((x) => x.doctorId === id).dltDialog.isShow = false;
-      if (success) {
-         if (this.page != 1) {
-          this.page = 1;
-        } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
-        }
-        this.setSnackbar("Delete Successful", "success");
-      } else {
-        this.setSnackbar("Delete failed", "error");
-      }
 
+      // this.doctors = CommonHelper.removeItem(this.doctors, item);
+      // console.log(this.doctors.length);
+      this.fetchDoctor();
+      this.setSnackbar("Delete Successful", "success");
       this.isDeleting = false;
     },
     setSnackbar(message, type) {
@@ -278,16 +214,8 @@ export default {
     },
   },
   components: {
-    DoctorForm,
-    EditDoctorForm,
-  },
-    watch: {
-    page: function () {
-      this.fetchDoctor(this.page, this.pageSize, this.searchValue);
-    },
+    CreatePatientForm,
+    EditPatientForm,
   },
 };
 </script>
-
-<style scoped>
-</style>

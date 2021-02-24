@@ -1,6 +1,6 @@
 class APIHelper {
  static getAPIDefault() {
-     return "https://capstoneapi-dev.azurewebsites.net/";
+     return "https://capstoneapi-dev.azurewebsites.net/api/v1/";
  }
 }
 

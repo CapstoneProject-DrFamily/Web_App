@@ -13,12 +13,14 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "firebase": "^8.2.6",
+    "lodash": "^4.17.21",
     "perfect-scrollbar": "^1.5.0",
     "vue": "^2.6.11",
     "vue-axios-cors": "^1.0.1",
     "vue-router": "^3.4.9",
     "vuejs-loading-screen": "^1.0.9",
     "vuetify": "^2.4.2",
+    "vuetify-confirm": "^2.0.6",
     "vuex": "^3.6.0"
   },
   "devDependencies": {

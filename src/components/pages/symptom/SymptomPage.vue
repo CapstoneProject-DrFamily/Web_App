@@ -29,58 +29,50 @@
           dense
           color="blue"
           solo
+          v-model="searchBoxValue"
         ></v-text-field>
       </v-col>
       <v-col cols="1">
         <div class="pt-1 pl-1">
-          <v-btn icon >
+          <v-btn icon @click="searchSymptom">
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </div>
       </v-col>
     </v-row>
 
-    <doctor-form @created="addDoctor"></doctor-form>
+    <create-symptom-form @created="addSymptom"></create-symptom-form>
 
     <v-simple-table class="elevation-1">
       <template v-slot:default>
         <thead>
           <tr>
-            <th class="text-left">Image</th>
             <th class="text-left">Name</th>
-            <th class="text-left">Speciality</th>
-            <th class="text-left">Email</th>
-
+            <th class="text-left">Type</th>
+            <th class="text-left">Description</th>
             <th class="text-left"></th>
             <th class="text-left"></th>
           </tr>
         </thead>
 
         <tbody>
-          <tr v-for="doctor in doctors" :key="doctor.doctorId">
-            <td class="pt-6 pb-6">
-              <v-img
-                :src="doctor.profile.image"
-                width="100"
-                height="100"
-              ></v-img>
-            </td>
-            <td>{{ doctor.profile.fullName }}</td>
-            <td>{{ doctor.specialty.name }}</td>
-            <td>{{ doctor.profile.email }}</td>
+          <tr v-for="symptom in symptoms" :key="symptom.symptomId">
+            <td>{{ symptom.name }}</td>
+            <td>{{ symptom.type }}</td>
+            <td>{{ symptom.description }}</td>
 
             <td>
-              <edit-doctor-form
-                :doctor="doctor"
-                @updated="updateDoctor"
-              ></edit-doctor-form>
+              <edit-symptom-form
+                :symptom="symptom"
+                @updated="updateSymptom"
+              ></edit-symptom-form>
             </td>
             <td>
               <div class="text-center">
                 <v-dialog
                   width="500"
                   :retain-focus="false"
-                  v-model="doctor.dltDialog.isShow"
+                  v-model="symptom.dltDialog.isShow"
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn tile color="error" v-bind="attrs" v-on="on">
@@ -90,7 +82,7 @@
 
                   <v-card>
                     <v-card-title class="headline red lighten-1">
-                      Confirm delete this doctor
+                      Confirm delete this symptom
                     </v-card-title>
 
                     <v-card-text>
@@ -102,7 +94,7 @@
                       <v-btn
                         color="grey"
                         text
-                        @click="doctor.dltDialog.isShow = false"
+                        @click="symptom.dltDialog.isShow = false"
                       >
                         Cancel
                       </v-btn>
@@ -112,7 +104,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteDoctor(doctor.doctorId)"
+                        @click.prevent="deleteSymptom(symptom.symptomId)"
                       >
                         I accept
                       </v-btn>
@@ -122,17 +114,22 @@
               </div>
             </td>
           </tr>
+          <td class="text-center" colspan="10">
+            <div class="pa-10" v-if="symptoms.length == 0 && !loading">
+              No data found
+            </div>
+
+            <div class="text-center pt-6 pb-6" v-if="loading">
+              <v-progress-circular
+                :size="50"
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+          </td>
         </tbody>
       </template>
     </v-simple-table>
-
-    <div class="text-center pt-6" v-if="loading">
-      <v-progress-circular
-        :size="50"
-        color="primary"
-        indeterminate
-      ></v-progress-circular>
-    </div>
 
     <v-row justify="center" v-if="!loading">
       <v-col cols="8">
@@ -149,15 +146,15 @@
 </template>
 
 <script>
-import DoctorForm from "./CreateDoctorForm.vue";
-import EditDoctorForm from "./EditDoctorForm.vue";
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
+import CreateSymptomForm from "./CreateSymptomForm.vue";
+import EditSymptomForm from "./EditSymptomForm.vue";
 // import CommonHelper from '../../../helpers/common';
 
 export default {
   mounted() {
-    this.fetchDoctor(this.page, this.pageSize, this.searchValue);
+    this.fetchSymptom(this.page, this.pageSize, this.searchValue);
   },
 
   data() {
@@ -168,7 +165,7 @@ export default {
       isDeleting: false,
       loading: false,
 
-      doctors: [],
+      symptoms: [],
       page: 1,
       pageSize: 10,
       totalPage: null,
@@ -177,19 +174,30 @@ export default {
     };
   },
   methods: {
-    async fetchDoctor(page, pageSize, value) {
+    searchSymptom() {
+      this.searchValue = this.searchBoxValue;
+      if (this.page != 1) {
+        this.page = 1;
+      } else {
+        this.fetchSymptom(this.page, this.pageSize, this.searchValue);
+      }
+    },
+
+    async fetchSymptom(page, pageSize, value) {
       this.loading = true;
-      this.doctors = [];
+      this.symptoms = [];
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      var url =
+      let url = null;
+
+      url =
         value == null
           ? APIHelper.getAPIDefault() +
-            "Doctors/paging?PageIndex=" +
+            "Symptoms/paging?PageIndex=" +
             page +
             "&PageSize=" +
             pageSize
           : APIHelper.getAPIDefault() +
-            "Doctors/paging?PageIndex=" +
+            "Symptoms/paging?PageIndex=" +
             page +
             "&PageSize=" +
             pageSize +
@@ -202,53 +210,51 @@ export default {
 
       if (response.status == 200) {
         this.totalPage = response.data.totalPages;
-        for (let i = 0; i < response.data.doctors.length; i++) {
-          if (!response.data.doctors[i].profile.users[0].waiting) {
-            let name = "dialog" + response.data.doctors[i].doctorId;
+        for (let i = 0; i < response.data.symptoms.length; i++) {
+          if (!response.data.symptoms[i].disable) {
+            let name = "dialog" + response.data.symptoms[i].symptomId;
             let dltDialog = { name: name, isShow: false };
-            response.data.doctors[i].dltDialog = dltDialog;
-            response.data.doctors[i].profile.birthday = response.data.doctors[
-              i
-            ].profile.birthday.substring(0, 10);
-            this.doctors.push(response.data.doctors[i]);
+            response.data.symptoms[i].dltDialog = dltDialog;
+            this.symptoms.push(response.data.symptoms[i]);
+            // console.log(response.data.medicines[i]);
           }
         }
-        console.log(this.doctors.length);
       }
+      console.log(this.symptoms);
       this.loading = false;
     },
-    updateDoctor(isUpdated) {
+    updateSymptom(isUpdated) {
       if (isUpdated) {
         if (this.page != 1) {
           this.page = 1;
         } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
+          this.fetchSymptom(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Update Doctor Successful", "success");
+        this.setSnackbar("Update Symptom Successful", "success");
       } else {
-        this.setSnackbar("Update Doctor Failed", "error");
+        this.setSnackbar("Update Symptom Failed", "error");
       }
     },
-    addDoctor(isSuccess) {
+    addSymptom(isSuccess) {
       if (isSuccess) {
-         if (this.page != 1) {
+        if (this.page != 1) {
           this.page = 1;
         } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
+          this.fetchSymptom(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Add Doctor Successful", "success");
+        this.setSnackbar("Add Medicine Successful", "success");
       } else {
-        this.setSnackbar("Add Doctor Failed", "error");
+        this.setSnackbar("Add Medicine Failed", "error");
       }
     },
-    async deleteDoctor(id) {
+    async deleteSymptom(id) {
       var success = false;
       this.isDeleting = true;
 
       // console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Doctors/" + id)
+        .delete(APIHelper.getAPIDefault() + "Symptoms/" + id)
         .catch(function (error) {
           console.log(error);
         });
@@ -257,14 +263,14 @@ export default {
         success = true;
       }
 
-      this.doctors.find((x) => x.doctorId === id).dltDialog.isShow = false;
+      this.symptoms.find((x) => x.symptomId === id).dltDialog.isShow = false;
       if (success) {
-         if (this.page != 1) {
+        if (this.page != 1) {
           this.page = 1;
         } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
+          this.fetchSymptom(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Delete Successful", "success");
+        this.setSnackbar("Delete successful", "success");
       } else {
         this.setSnackbar("Delete failed", "error");
       }
@@ -277,14 +283,14 @@ export default {
       this.type = type;
     },
   },
-  components: {
-    DoctorForm,
-    EditDoctorForm,
-  },
-    watch: {
+  watch: {
     page: function () {
-      this.fetchDoctor(this.page, this.pageSize, this.searchValue);
+      this.fetchSymptom(this.page, this.pageSize, this.searchValue);
     },
+  },
+  components: {
+    CreateSymptomForm,
+    EditSymptomForm,
   },
 };
 </script>

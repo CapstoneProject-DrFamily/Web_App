@@ -74,7 +74,7 @@ export default {
       };
 
       await axios
-        .post(APIHelper.getAPIDefault() + "api/v1/Auth", loginData)
+        .post(APIHelper.getAPIDefault() + "Auth", loginData)
         .then(function (response) {
           console.log(response.status);
           if (response.status == 200) {

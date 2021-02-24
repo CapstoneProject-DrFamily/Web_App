@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <v-dialog width="500" v-model="show">
+    <v-dialog width="500" v-model="show" @click:outside="changeSaved">
       <template v-slot:activator="{ on, attrs }">
         <v-row justify="end" class="mr-4 mb-4">
           <div class="my-2">
@@ -31,6 +31,7 @@
             ></v-img>
           </v-row>
           <v-file-input
+            @change="onChange = true"
             class="pt-10"
             v-model="imageData"
             label="Select your image"
@@ -43,29 +44,35 @@
 
         <v-card-text>
           <v-container>
-            <v-form @submit.prevent>
+            <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Account Detail</div>
               <v-text-field
+                @change="onChange = true"
                 class="pt-6"
                 solo
                 v-model="username"
                 label="Username (Your phone number)*"
                 prepend-icon="mdi-account-box"
                 required
+                :rules="[(v) => !!v || 'Please enter your username']"
               ></v-text-field>
 
               <v-text-field
+                @change="onChange = true"
                 class="pt-4"
                 solo
                 v-model="fullname"
                 prepend-icon="mdi-account"
                 label="Full Name*"
+                :rules="[(v) => !!v || 'Please enter your full name']"
                 required
               ></v-text-field>
               <v-radio-group
+                @change="onChange = true"
                 v-model="gender"
                 row
                 prepend-icon="mdi-gender-male-female"
+                :rules="[(v) => !!v || 'Please select your gender']"
               >
                 <v-radio value="Male" label="Male"> </v-radio>
                 <v-radio value="Female" label="Female"> </v-radio>
@@ -80,6 +87,7 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
+                    @change="onChange = true"
                     class="pt-4"
                     solo
                     v-model="date"
@@ -102,6 +110,8 @@
                 </v-date-picker>
               </v-dialog>
               <v-text-field
+                :rules="[(v) => !!v || 'Please enter your email']"
+                @change="onChange = true"
                 class="pt-4"
                 solo
                 v-model="email"
@@ -111,6 +121,8 @@
               ></v-text-field>
 
               <v-text-field
+                :rules="[(v) => !!v || 'Please enter your ID CARD']"
+                @change="onChange = true"
                 class="pt-4"
                 solo
                 v-model="idCard"
@@ -123,6 +135,8 @@
               </div>
 
               <v-text-field
+                :rules="[(v) => !!v || 'Please enter your degree']"
+                @change="onChange = true"
                 class="pt-6"
                 solo
                 v-model="degree"
@@ -131,6 +145,8 @@
                 required
               ></v-text-field>
               <v-text-field
+                :rules="[(v) => !!v || 'Please enter your experience']"
+                @change="onChange = true"
                 class="pt-4"
                 solo
                 v-model="experience"
@@ -140,6 +156,8 @@
               ></v-text-field>
 
               <v-select
+                :rules="[(v) => !!v || 'Please select your speciality']"
+                @change="onChange = true"
                 prepend-icon="mdi-needle"
                 :items="specialities"
                 item-text="name"
@@ -149,6 +167,8 @@
                 solo
               ></v-select>
               <v-text-field
+                :rules="[(v) => !!v || 'Please enter your school']"
+                @change="onChange = true"
                 class="pt-4"
                 solo
                 label="School*"
@@ -157,6 +177,8 @@
                 v-model="school"
               ></v-text-field>
               <v-textarea
+                :rules="[(v) => !!v || 'Please enter your description']"
+                @change="onChange = true"
                 class="pt-4"
                 v-model="description"
                 label="Description*"
@@ -165,16 +187,23 @@
                 required
               ></v-textarea>
 
-              <v-row justify="center">
+              <v-row justify="center" class="pt-3">
                 <v-btn
-                  color="error"
+                  color="info"
                   class="mr-4"
                   v-on:click="resetForm()"
                   v-if="!loading"
                 >
                   Reset
                 </v-btn>
-
+                <v-btn
+                  color="error"
+                  class="mr-4"
+                  v-on:click="Cancel()"
+                  v-if="!loading"
+                >
+                  Cancel
+                </v-btn>
                 <v-btn
                   :loading="loading"
                   :disabled="loading"
@@ -207,6 +236,7 @@ export default {
 
   data() {
     return {
+      valid: false,
       username: null,
       fullname: null,
       gender: null,
@@ -230,11 +260,19 @@ export default {
     };
   },
   methods: {
+    Cancel() {
+      this.resetForm();
+      this.show = false;
+    },
+    changeSaved() {
+      this.resetForm();
+      this.$refs.form.resetValidation();
+    },
     async fetchSpecialities() {
       // await new Promise((resolve) => setTimeout(resolve, 500));
 
       var response = await axios
-        .get(APIHelper.getAPIDefault() + "api/v1/Specialty")
+        .get(APIHelper.getAPIDefault() + "Specialty")
         .catch(function (error) {
           console.log(error);
         });
@@ -247,6 +285,10 @@ export default {
     },
 
     async createDoctor() {
+      this.$refs.form.validate();
+      if (!this.valid) {
+        return;
+      }
       var isCreated = false;
 
       this.loading = true;
@@ -267,7 +309,7 @@ export default {
       };
 
       var response = await axios
-        .post(APIHelper.getAPIDefault() + "api/v1/Profiles", data)
+        .post(APIHelper.getAPIDefault() + "Profiles", data)
         .catch(function (error) {
           console.log(error);
         });
@@ -285,7 +327,7 @@ export default {
           waiting: false,
         };
         response = await axios
-          .post(APIHelper.getAPIDefault() + "api/v1/Users", data)
+          .post(APIHelper.getAPIDefault() + "Users", data)
           .catch(function (error) {
             console.log(error);
           });
@@ -301,14 +343,14 @@ export default {
             school: this.school,
           };
           response = await axios
-            .post(APIHelper.getAPIDefault() + "api/v1/Doctors", data)
+            .post(APIHelper.getAPIDefault() + "Doctors", data)
             .catch(function (error) {
               console.log(error);
             });
-            if(response.status == 201) {
-               console.log(response);
-              isCreated = true;
-            }
+          if (response.status == 201) {
+            console.log(response);
+            isCreated = true;
+          }
         }
       }
 
@@ -319,6 +361,7 @@ export default {
       this.loading = false;
     },
     resetForm() {
+      this.$refs.form.resetValidation();
       this.imageData = null;
       this.imagePreview = defaultImage;
 
@@ -333,7 +376,7 @@ export default {
       this.experience = null;
       this.description = null;
       this.school = null;
-      this.speciality = null;      
+      this.speciality = null;
     },
   },
   watch: {

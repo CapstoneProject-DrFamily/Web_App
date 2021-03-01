@@ -50,6 +50,7 @@
                 @change="onChange = true"
                 class="pt-6"
                 solo
+                type="number"
                 v-model="username"
                 label="Username (Your phone number)*"
                 prepend-icon="mdi-account-box"
@@ -289,7 +290,6 @@ export default {
       if (!this.valid) {
         return;
       }
-      var isCreated = false;
 
       this.loading = true;
       var imgURL = null;
@@ -298,67 +298,68 @@ export default {
         console.log(imgURL);
       }
 
-      let data = {
-        fullname: this.fullname,
-        birthday: this.date,
-        gender: this.gender,
-        phone: this.username,
-        image: imgURL,
-        email: this.email,
-        idCard: this.idCard,
-      };
+      // var isCreated = false;
+      // let data = {
+      //   fullname: this.fullname,
+      //   birthday: this.date,
+      //   gender: this.gender,
+      //   phone: this.username,
+      //   image: imgURL,
+      //   email: this.email,
+      //   idCard: this.idCard,
+      // };
 
-      var response = await axios
-        .post(APIHelper.getAPIDefault() + "Profiles", data)
-        .catch(function (error) {
-          console.log(error);
-        });
-      console.log(response);
+      // var response = await axios
+      //   .post(APIHelper.getAPIDefault() + "Profiles", data)
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
+      // console.log(response);
 
-      if (response.status == 201) {
-        var profileId = response.data.profileId;
-        let data = {
-          disabled: false,
-          insBy: "Admin",
-          username: this.username,
-          password: null,
-          roleId: 3,
-          profileId: profileId,
-          waiting: false,
-        };
-        response = await axios
-          .post(APIHelper.getAPIDefault() + "Users", data)
-          .catch(function (error) {
-            console.log(error);
-          });
-        console.log(response);
+      // if (response.status == 201) {
+      //   var profileId = response.data.profileId;
+      //   let data = {
+      //     disabled: false,
+      //     insBy: "Admin",
+      //     username: this.username,
+      //     password: null,
+      //     roleId: 3,
+      //     profileId: profileId,
+      //     waiting: false,
+      //   };
+      //   response = await axios
+      //     .post(APIHelper.getAPIDefault() + "Users", data)
+      //     .catch(function (error) {
+      //       console.log(error);
+      //     });
+      //   console.log(response);
 
-        if (response.status == 201) {
-          let data = {
-            degree: this.degree,
-            experience: this.experience,
-            description: this.description,
-            specialtyId: this.speciality,
-            profileId: profileId,
-            school: this.school,
-          };
-          response = await axios
-            .post(APIHelper.getAPIDefault() + "Doctors", data)
-            .catch(function (error) {
-              console.log(error);
-            });
-          if (response.status == 201) {
-            console.log(response);
-            isCreated = true;
-          }
-        }
-      }
+      //   if (response.status == 201) {
+      //     let data = {
+      //       degree: this.degree,
+      //       experience: this.experience,
+      //       description: this.description,
+      //       specialtyId: this.speciality,
+      //       profileId: profileId,
+      //       school: this.school,
+      //     };
+      //     response = await axios
+      //       .post(APIHelper.getAPIDefault() + "Doctors", data)
+      //       .catch(function (error) {
+      //         console.log(error);
+      //       });
+      //     if (response.status == 201) {
+      //       console.log(response);
+      //       isCreated = true;
+      //     }
+      //   }
+      // }
 
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      this.resetForm();
-      this.show = false;
-      this.$emit("created", isCreated);
-      this.loading = false;
+      // // await new Promise((resolve) => setTimeout(resolve, 500));
+      // this.resetForm();
+      // this.show = false;
+      // this.$emit("created", isCreated);
+      // this.loading = false;
     },
     resetForm() {
       this.$refs.form.resetValidation();

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app width="260" dark>
+  <v-navigation-drawer app width="260" dark v-model="this.$store.state.drawerOn">
     <!-- v-model="this.$store.state.drawerOn" -->
     <v-list dense nav>
       <v-list-item class="pt-4">
@@ -29,7 +29,7 @@
       <v-list-group prepend-icon="mdi-account-circle" no-action>
         <template v-slot:activator >
           <v-list-item-content>
-            <v-list-item-title>Manage Doctors</v-list-item-title>
+            <v-list-item-title>Manage Doctor</v-list-item-title>
           </v-list-item-content>
         </template>
         <v-list-item class="pl-6" link to="/admin/doctor/active">
@@ -71,6 +71,20 @@
           <v-icon>mdi-account-search</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Manage Symptom</v-list-item-title>
+      </v-list-item>
+
+        <v-list-item link to="/admin/service">
+        <v-list-item-icon>
+          <v-icon>mdi-baby-bottle</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Manage Service</v-list-item-title>
+      </v-list-item>
+
+        <v-list-item link to="/admin/transaction">
+        <v-list-item-icon>
+          <v-icon>mdi-database</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>List Transaction</v-list-item-title>
       </v-list-item>
     </v-list>
   </v-navigation-drawer>

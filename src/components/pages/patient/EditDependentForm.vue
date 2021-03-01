@@ -1,33 +1,33 @@
 <template>
-  <div class="text-center pt-6">
-    <div class="text-center">
-      <v-snackbar
-        timeout="5000"
-        v-model="snackbar"
-        centered
-        :color="type"
-        outlined
-        :auto-height="true"
-      >
-        {{ message }}
+  <div>
+    <v-snackbar
+      timeout="5000"
+      v-model="snackbar"
+      centered
+      :color="type"
+      outlined
+      :auto-height="true"
+    >
+      {{ message }}
 
-        <template v-slot:action="{ attrs }">
-          <v-btn :color="type" text v-bind="attrs" @click="snackbar = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </template>
-      </v-snackbar>
-    </div>
+      <template v-slot:action="{ attrs }">
+        <v-btn :color="type" text v-bind="attrs" @click="snackbar = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
 
-    <v-dialog width="500" v-model="show" persistent>
+    <v-dialog width="450" v-model="show" persistent>
       <template v-slot:activator="{ on, attrs }">
-        <v-row justify="end" class="mr-4 mb-4">
-          <div class="my-2">
-            <v-btn tile color="success" v-bind="attrs" v-on="on">
-              <v-icon>mdi-pencil </v-icon>
-            </v-btn>
-          </div>
-        </v-row>
+        <v-chip
+          close
+          @click:close="deleteConfirm()"
+          v-bind="attrs"
+          v-on="on"
+          color="primary"
+          class="ml-1 mr-1 mb-1"
+          >{{ dependent.dependentName }}</v-chip
+        >
       </template>
       <v-img
         src="https://static.vecteezy.com/system/resources/previews/000/656/917/non_2x/vector-set-of-doctor-cartoon-characters-medical-staff-team-concept-in-front-of-hospital.jpg"
@@ -37,21 +37,21 @@
         <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-              Update Patient
+              Update Dependent
             </p>
           </v-col>
         </v-row>
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
             <v-img
-              v-if="temporaryData.profile.image != null"
+              v-if="temporaryData.dependentData.profile.image != null"
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.profile.image"
+              :src="temporaryData.dependentData.profile.image"
             ></v-img>
             <v-img
-              v-if="temporaryData.profile.image == null"
+              v-if="temporaryData.dependentData.profile.image == null"
               contain
               max-height="80%"
               max-width="80%"
@@ -82,35 +82,40 @@
           <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Account Detail</div>
-              <v-text-field
-                @change="onChange = true"
-                class="pt-6"
-                solo
-                v-model="temporaryData.profile.users[0].username"
-                readonly
-                label="Username (Your phone number)*"
-                prepend-icon="mdi-account-box"
-                required
-                disabled
-              ></v-text-field>
 
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.fullName"
+                v-model="temporaryData.dependentData.profile.fullName"
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
                 :rules="[
                   (v) =>
                     (v.length < 50 && v.length > 3) ||
-                    'Your fullname must between 3 - 50 character',
+                    'Dependent fullname must between 3 - 50 character',
                 ]"
               ></v-text-field>
+
+              <v-text-field
+                @change="onChange = true"
+                class="pt-4"
+                solo
+                v-model="temporaryData.dependentRelationShip"
+                prepend-icon="mdi-account"
+                label="Full Name*"
+                required
+                :rules="[
+                  (v) =>
+                    (v.length < 50 && v.length > 3) ||
+                    'Dependent relationship must between 3 - 50 character',
+                ]"
+              ></v-text-field>
+
               <v-radio-group
                 @change="onChange = true"
-                v-model="temporaryData.profile.gender"
+                v-model="temporaryData.dependentData.profile.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -121,7 +126,9 @@
               <v-dialog
                 ref="dialog"
                 v-model="modal"
-                :return-value.sync="temporaryData.profile.birthday"
+                :return-value.sync="
+                  temporaryData.dependentData.profile.birthday
+                "
                 persistent
                 width="290px"
               >
@@ -130,7 +137,7 @@
                     @change="onChange = true"
                     class="pt-4"
                     solo
-                    v-model="temporaryData.profile.birthday"
+                    v-model="temporaryData.dependentData.profile.birthday"
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -140,7 +147,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="temporaryData.profile.birthday"
+                  v-model="temporaryData.dependentData.profile.birthday"
                   scrollable
                 >
                   <v-spacer></v-spacer>
@@ -150,7 +157,11 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.dialog.save(temporaryData.profile.birthday)"
+                    @click="
+                      $refs.dialog.save(
+                        temporaryData.dependentData.profile.birthday
+                      )
+                    "
                   >
                     OK
                   </v-btn>
@@ -161,7 +172,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.phone"
+                v-model="temporaryData.dependentData.profile.phone"
                 label="Phone*"
                 prepend-icon="mdi-phone"
                 required
@@ -171,7 +182,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.email"
+                v-model="temporaryData.dependentData.profile.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -181,7 +192,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.idCard"
+                v-model="temporaryData.dependentData.profile.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -193,7 +204,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.height"
+                v-model="temporaryData.dependentData.height"
                 label="Height"
                 prepend-icon="mdi-human-male-height-variant"
                 type="number"
@@ -203,7 +214,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.weight"
+                v-model="temporaryData.dependentData.weight"
                 label="Weight"
                 prepend-icon="mdi-weight-kilogram"
                 type="number"
@@ -214,30 +225,10 @@
                 @change="onChange = true"
                 prepend-icon="mdi-water"
                 :items="bloodType"
-                v-model="temporaryData.bloodType"
+                v-model="temporaryData.dependentData.bloodType"
                 label="Blood Type"
                 solo
               ></v-select>
-
-              <div class="font-weight-bold customHeader pt-5 pb-5">
-                Dependents
-              </div>
-
-              <v-row class="pb-5">
-                <v-col cols="1">
-                  <v-icon>mdi-account-multiple</v-icon>
-                </v-col>
-                <v-col v-if="dependents.length == 0">No dependent</v-col>
-                <v-col v-if="dependents.length != 0">
-                  <edit-dependent-form
-                    v-for="dependent in dependents"
-                    :key="dependent.patientId"
-                    :dependent="dependent"
-                    @updated="updateDependent"
-                    @deleted="deleteDependent"
-                  ></edit-dependent-form>
-                </v-col>
-              </v-row>
 
               <v-row justify="center" class="pt-3">
                 <v-btn
@@ -264,7 +255,7 @@
                   color="success"
                   class="mr-4"
                   type="submit"
-                  v-on:click="updatePatient()"
+                  v-on:click="updateDependent()"
                 >
                   Save
                 </v-btn>
@@ -282,13 +273,12 @@ import defaultImage from "../../../assets/placeholder-img.jpg";
 import CommonHelper from "../../../helpers/common";
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
-import EditDependentForm from "./EditDependentForm";
 
 export default {
   created() {
-    this.temporaryData = JSON.parse(JSON.stringify(this.patient));
+    this.temporaryData = JSON.parse(JSON.stringify(this.dependent));
   },
-  props: ["patient"],
+  props: ["dependent"],
   data() {
     return {
       message: "",
@@ -296,7 +286,6 @@ export default {
       snackbar: false,
       valid: false,
       temporaryData: [],
-      dependents: [],
       onChange: false,
       modal: false,
       imageData: null,
@@ -306,33 +295,28 @@ export default {
       bloodType: ["A", "B", "AB", "O"],
     };
   },
-  components: {
-    EditDependentForm,
-  },
+  components: {},
   methods: {
-    updateDependent(isUpdated) {
-      if (isUpdated) {
-        this.setSnackbar("Update Successful", "success");
-      } else {
-        this.setSnackbar("Update Failed", "error");
-      }
-      this.fetchDependent();
-    },
-      deleteDependent(success) {
-      if (success) {
-        this.setSnackbar("Delete Successful", "success");
-      } else {
-        this.setSnackbar("Delete Failed", "error");
-      }
-      this.fetchDependent();
+    deleteConfirm() {
+      this.$confirm(
+        "Do you really want to delete " +
+          this.temporaryData.dependentName +
+          " ? You cannot undo this action"
+      ).then((res) => {
+        if (res) {
+          this.deleteDependent();
+        }
+      });
     },
 
-    async deletePatient(id) {
+    async deleteDependent() {
       var success = false;
       this.isDeleting = true;
 
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Patients/" + id)
+        .delete(
+          APIHelper.getAPIDefault() + "Patients/" + this.temporaryData.patientID
+        )
         .catch(function (error) {
           console.log(error);
         });
@@ -340,19 +324,9 @@ export default {
         if (response.status == 204) {
           success = true;
         }
-        this.dependents.find(
-          (x) => x.patientID === id
-        ).dltDialog.isShow = false;
       }
-      this.setSnackbar("Delete Successful", "success");
-
-      if (success) {
-        this.setSnackbar("Delete Successful", "success");
-      } else {
-        this.setSnackbar("Delete failed", "error");
-      }
-
-      this.fetchDependent();
+      this.show = false;
+      this.$emit("deleted", success);
 
       this.isDeleting = false;
     },
@@ -363,55 +337,18 @@ export default {
       this.type = type;
     },
 
-    async fetchDependent() {
-      this.dependents = [];
-      let id = this.temporaryData.profile.users[0].accountId;
-      let response = await axios
-        .get(APIHelper.getAPIDefault() + "Patients/" + id + "/Dependents")
-        .catch(function (error) {
-          console.log(error);
-        });
-      for (let i = 0; i < response.data.length; i++) {
-        if (response.data[i].dependentRelationShip != "owner") {
-          let name = "dialog" + response.data[i].patientID;
-          let dltDialog = { name: name, isShow: false };
-          response.data[i].dltDialog = dltDialog;
-
-          let dependent = await axios
-            .get(
-              APIHelper.getAPIDefault() +
-                "Patients/" +
-                response.data[i].patientID
-            )
-            .catch(function (error) {
-              console.log(error);
-            });
-
-          dependent.data.profile.birthday = dependent.data.profile.birthday.substring(
-            0,
-            10
-          );
-          response.data[i].dependentData = dependent.data;
-          console.log(response.data[i]);
-
-          this.dependents.push(response.data[i]);
-        }
-      }
-    },
-
     Reset() {
       this.onChange = false;
-      this.temporaryData = JSON.parse(JSON.stringify(this.patient));
+      this.temporaryData = JSON.parse(JSON.stringify(this.dependent));
     },
 
     Cancel() {
-      this.$emit("cancel");
       if (this.onChange) {
         this.$confirm(
           "Do you really want to exit? Your change will all lost."
         ).then((res) => {
           if (res) {
-            this.temporaryData = JSON.parse(JSON.stringify(this.patient));
+            this.temporaryData = JSON.parse(JSON.stringify(this.dependent));
             this.show = false;
           }
         });
@@ -423,7 +360,7 @@ export default {
       console.log(this.onChange);
     },
 
-    async updatePatient() {
+    async updateDependent() {
       this.$refs.form.validate();
       if (!this.valid) {
         return;
@@ -435,39 +372,40 @@ export default {
       if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
-        this.temporaryData.profile.image = imgURL;
+        this.temporaryData.dependentData.profile.image = imgURL;
       }
 
       let profileDetail = {
-        profileId: this.temporaryData.profileId,
-        fullname: this.temporaryData.profile.fullName,
-        birthday: this.temporaryData.profile.birthday,
-        gender: this.temporaryData.profile.gender,
-        phone: this.temporaryData.profile.phone,
-        image: this.temporaryData.profile.image,
-        email: this.temporaryData.profile.email,
-        idCard: this.temporaryData.profile.idCard,
+        profileId: this.temporaryData.dependentData.profileId,
+        fullname: this.temporaryData.dependentData.profile.fullName,
+        birthday: this.temporaryData.dependentData.profile.birthday,
+        gender: this.temporaryData.dependentData.profile.gender,
+        phone: this.temporaryData.dependentData.profile.phone,
+        image: this.temporaryData.dependentData.profile.image,
+        email: this.temporaryData.dependentData.profile.email,
+        idCard: this.temporaryData.dependentData.profile.idCard,
       };
       console.log(profileDetail);
 
       let profilePatient = {
-        patientId: this.temporaryData.patientId,
+        patientId: this.temporaryData.dependentData.patientId,
         height:
-          this.temporaryData.height == null || this.temporaryData.height == ""
+          this.temporaryData.dependentData.height == null ||
+          this.temporaryData.dependentData.height == ""
             ? 0
-            : this.temporaryData.height,
+            : this.temporaryData.dependentData.height,
         weight:
-          this.temporaryData.weight == null || this.temporaryData.weight == ""
+          this.temporaryData.dependentData.weight == null ||
+          this.temporaryData.dependentData.weight == ""
             ? 0
-            : this.temporaryData.weight,
-        bloodType: this.temporaryData.bloodType,
-        profileId: this.temporaryData.profileId,
-        relationship: this.temporaryData.relationship,
-        accountId: this.temporaryData.accountId,
-        recordId: this.temporaryData.recordId,
+            : this.temporaryData.dependentData.weight,
+        bloodType: this.temporaryData.dependentData.bloodType,
+        profileId: this.temporaryData.dependentData.profileId,
+        relationship: this.temporaryData.dependentRelationShip,
+        accountId: this.temporaryData.dependentData.accountId,
+        recordId: this.temporaryData.dependentData.recordId,
       };
 
-      console.log(profilePatient);
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Patients", profilePatient)
         .catch(function (error) {
@@ -493,13 +431,6 @@ export default {
     },
   },
   watch: {
-    show: function () {
-      if (this.show) {
-        this.fetchDependent();
-      } else {
-        this.dependents = [];
-      }
-    },
     imageData: function () {
       // preview image before upload
       if (this.imageData != null) {

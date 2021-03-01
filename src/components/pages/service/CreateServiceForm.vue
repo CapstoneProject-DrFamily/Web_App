@@ -6,69 +6,58 @@
           <div class="my-2">
             <v-btn color="primary" v-bind="attrs" v-on="on">
               <v-icon>mdi-plus</v-icon>
-              Add Medicine
+              Add Service
             </v-btn>
           </div>
         </v-row>
       </template>
       <v-img
-        src="https://image.freepik.com/free-vector/medicines-drug-collection-with-banner-free-space_65709-20.jpg"
+        src="https://image.freepik.com/free-vector/doctors-examining-huge-liver-with-magnifier-microscope-cirrhosis-cirrhosis-liver-liver-disease-concept-white-background-pinkish-coral-bluevector-isolated-illustration_335657-1531.jpg"
         height="200px"
       ></v-img>
       <v-card>
-      <v-row>
+           <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-             Create New Medicine
+              Create Service
             </p>
           </v-col>
         </v-row>
         <v-card-text>
           <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
-              <div class="font-weight-bold customHeader">Medicine</div>
+              <div class="font-weight-bold customHeader">Service</div>
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="createData.name"
-                label="Name"
+                v-model="createData.serviceName"
+                label="Service Name"
                 prepend-icon="mdi-ab-testing"
                 required
-                :rules="[(v) => !!v || 'Please enter medicine name']"
+                :rules="[(v) => !!v || 'Please enter service name']"
               ></v-text-field>
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="createData.form"
-                label="Form"
-                prepend-icon="mdi-pill"
+                v-model="createData.servicePrice"
+                label="Service Price"
+                prepend-icon="mdi-format-list-bulleted-type"
                 required
-                :rules="[(v) => !!v || 'Please enter medicine form']"
+                type="number"
+                :rules="[(v) => !!v || 'Please enter service price']"
               ></v-text-field>
-              <v-text-field
+              <v-textarea
                 @change="onChange = true"
-                class="pt-6"
+                class="pt-4"
+                v-model="createData.description"
+                label="Service Description"
                 solo
-                v-model="createData.strength"
-                label="Strength"
-                prepend-icon="mdi-wave"
+                prepend-icon="mdi-book-open-variant"
                 required
-                :rules="[(v) => !!v || 'Please enter medicine strength']"
-              ></v-text-field>
-              <v-text-field
-                @change="onChange = true"
-                class="pt-6"
-                solo
-                v-model="createData.activeIngredient"
-                label="Active Ingredient"
-                prepend-icon="mdi-fruit-cherries"
-                required
-                :rules="[
-                  (v) => !!v || 'Please enter medicine active ingredient',
-                ]"
-              ></v-text-field>
+                :rules="[(v) => !!v || 'Please enter service description']"
+              ></v-textarea>
 
               <v-row justify="center" class="pt-3">
                 <v-btn
@@ -82,7 +71,7 @@
                 <v-btn
                   color="error"
                   class="mr-4"
-                  v-on:click="Cancel()"
+                  v-on:click="cancel()"
                   v-if="!loading"
                 >
                   Cancel
@@ -93,7 +82,7 @@
                   color="success"
                   class="mr-4"
                   type="submit"
-                  v-on:click="createMedicine()"
+                  v-on:click="createService()"
                 >
                   Create
                 </v-btn>
@@ -116,10 +105,9 @@ export default {
       valid: false,
 
       createData: {
-        name: null,
-        form: null,
-        strength: null,
-        activeIngredient: null,
+        serviceName: null,
+        servicePrice: null,
+        serviceDescription: null,
       },
 
       modal: false,
@@ -129,7 +117,7 @@ export default {
     };
   },
   methods: {
-    Cancel() {
+    cancel() {
       this.resetForm();
       this.show = false;
     },
@@ -138,7 +126,7 @@ export default {
       this.$refs.form.resetValidation();
     },
 
-    async createMedicine() {
+    async createService() {
       this.$refs.form.validate();
       if (!this.valid) {
         return;
@@ -148,12 +136,15 @@ export default {
       this.loading = true;
 
       var response = await axios
-        .post(APIHelper.getAPIDefault() + "Medicines", this.createData)
+        .post(
+          APIHelper.getAPIDefault() + "Services",
+          this.createData
+        )
         .catch(function (error) {
           console.log(error);
         });
-      if(response.status == 201) {
-          isCreated = true;
+      if (response.status == 201) {
+        isCreated = true;
       }
 
       // await new Promise((resolve) => setTimeout(resolve, 500));
@@ -164,8 +155,8 @@ export default {
     },
     resetForm() {
       this.$refs.form.resetValidation();
-      for(let data in this.createData) {
-          this.createData[data] = null;
+      for (let data in this.createData) {
+        this.createData[data] = null;
       }
     },
   },

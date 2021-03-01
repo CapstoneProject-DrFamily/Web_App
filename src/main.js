@@ -45,7 +45,7 @@ Vue.use(VuetifyConfirm, {
   vuetify,
   buttonTrueText: "Accept",
   buttonFalseText: "Cancel",
-  color: "warning",
-  title: "You changed didn't save yet",
+  color: "info",
+  title: "Confirm your action",
   width: 350,
 });

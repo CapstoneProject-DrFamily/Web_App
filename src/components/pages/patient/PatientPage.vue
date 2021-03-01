@@ -29,18 +29,17 @@
           dense
           color="blue"
           solo
+          v-model="searchBoxValue"
         ></v-text-field>
       </v-col>
       <v-col cols="1">
         <div class="pt-1 pl-1">
-          <v-btn icon>
+          <v-btn icon @click="searchPatient">
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </div>
       </v-col>
     </v-row>
-
-    <create-patient-form @created="addDoctor"></create-patient-form>
 
     <v-simple-table class="elevation-1">
       <template v-slot:default>
@@ -48,7 +47,7 @@
           <tr>
             <th class="text-left">Image</th>
             <th class="text-left">Name</th>
-            <th class="text-left">Address</th>
+            <th class="text-left">Phone</th>
             <th class="text-left">Email</th>
 
             <th class="text-left"></th>
@@ -59,14 +58,22 @@
         <tbody>
           <tr v-for="patient in patients" :key="patient.patientId">
             <td class="pt-6 pb-6">
-              <v-img :src="patient.profile.image" width="100" height="100"></v-img>
+              <v-img
+                :src="patient.profile.image"
+                width="100"
+                height="100"
+              ></v-img>
             </td>
-            <td>{{ patient.profile.fullname }}</td>
+            <td>{{ patient.profile.fullName }}</td>
+            <td>{{ patient.profile.phone }}</td>
             <td>{{ patient.profile.email }}</td>
-            <td>{{ patient.profile.idCard }}</td>
 
             <td>
-              <edit-patient-form></edit-patient-form>
+              <edit-patient-form
+                :patient="patient"
+                @updated="updatePatient"
+                @cancel="cancel"
+              ></edit-patient-form>
             </td>
             <td>
               <div class="text-center">
@@ -105,7 +112,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteDoctor(doctor.doctorId)"
+                        @click.prevent="deletePatient(patient.patientId)"
                       >
                         I accept
                       </v-btn>
@@ -115,22 +122,31 @@
               </div>
             </td>
           </tr>
+          <td class="text-center" colspan="10">
+            <div class="pa-10" v-if="patients.length == 0 && !loading">
+              No data found
+            </div>
+
+            <div class="text-center pt-6 pb-6" v-if="loading">
+              <v-progress-circular
+                :size="50"
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+          </td>
         </tbody>
       </template>
     </v-simple-table>
 
-    <div class="text-center pt-6" v-if="loading">
-      <v-progress-circular
-        :size="50"
-        color="primary"
-        indeterminate
-      ></v-progress-circular>
-    </div>
-
     <v-row justify="center" v-if="!loading">
       <v-col cols="8">
         <v-container class="max-width">
-          <v-pagination v-model="page" class="my-4" :length="10"></v-pagination>
+          <v-pagination
+            v-model="page"
+            class="my-4"
+            :length="totalPage"
+          ></v-pagination>
         </v-container>
       </v-col>
     </v-row>
@@ -138,15 +154,13 @@
 </template>
 
 <script>
-import CreatePatientForm from "./CreatePatientForm.vue";
-import EditPatientForm from "./EditPatientForm.vue";
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
-// import CommonHelper from '../../../helpers/common';
+import EditPatientForm from "./EditPatientForm";
 
 export default {
   mounted() {
-    this.fetchPatient();
+    this.fetchPatient(this.page, this.pageSize, this.searchValue);
   },
 
   data() {
@@ -156,55 +170,112 @@ export default {
       message: ``,
       isDeleting: false,
       loading: false,
-      page: 1,
 
       patients: [],
+      page: 1,
+      pageSize: 10,
+      totalPage: null,
+      searchBoxValue: null,
+      searchValue: null,
     };
   },
   methods: {
-    async fetchPatient() {
+    cancel() {
+      if (this.page != 1) {
+        this.page = 1;
+      } else {
+        this.fetchPatient(this.page, this.pageSize, null);
+      }
+    },
+    searchPatient() {
+      this.searchValue = this.searchBoxValue;
+      if (this.page != 1) {
+        this.page = 1;
+      } else {
+        this.fetchPatient(this.page, this.pageSize, this.searchValue);
+      }
+    },
+    async fetchPatient(page, pageSize, value) {
       this.loading = true;
       this.patients = [];
       // await new Promise((resolve) => setTimeout(resolve, 500));
+      var url =
+        value == null
+          ? APIHelper.getAPIDefault() +
+            "Patients/paging?PageIndex=" +
+            page +
+            "&PageSize=" +
+            pageSize
+          : APIHelper.getAPIDefault() +
+            "Patients/paging?PageIndex=" +
+            page +
+            "&PageSize=" +
+            pageSize +
+            "&SearchValue=" +
+            value;
 
-      var response = await axios
-        .get(APIHelper.getAPIDefault() + "Patients")
-        .catch(function (error) {
-          console.log(error);
-        });
+      var response = await axios.get(url).catch(function (error) {
+        console.log(error);
+      });
 
       if (response.status == 200) {
-        for (let i = 0; i < response.data.length; i++) {
-          let name = "dialog" + response.data[i].patientId;
-          let dltDialog = { name: name, isShow: false };
-          response.data[i].dltDialog = dltDialog;
-          // let data = response.data[i];
-          // console.log(data);
-          this.patients.push(response.data[i]);
+        this.totalPage = response.data.totalPages;
+
+        for (let i = 0; i < response.data.patients.length; i++) {
+          if (!response.data.patients[i].profile.users[0].waiting) {
+            let name = "dialog" + response.data.patients[i].patientId;
+            let dltDialog = { name: name, isShow: false };
+            response.data.patients[i].dltDialog = dltDialog;
+            response.data.patients[i].profile.birthday = response.data.patients[
+              i
+            ].profile.birthday.substring(0, 10);
+            this.patients.push(response.data.patients[i]);
+          }
         }
       }
       this.loading = false;
     },
-
-    addDoctor(isSuccess) {
-      if (isSuccess) {
-        this.fetchDoctor();
-        this.setSnackbar("Add Doctor Successful", "success");
+    updatePatient(isUpdated) {
+      if (isUpdated) {
+        if (this.page != 1) {
+          this.page = 1;
+        } else {
+          this.fetchPatient(this.page, this.pageSize, null);
+        }
+        this.setSnackbar("Update Successful", "success");
       } else {
-        this.setSnackbar("Add Doctor Failed", "error");
+        this.setSnackbar("Update Failed", "error");
       }
     },
-    async deleteDoctor(id) {
+
+    async deletePatient(id) {
+      var success = false;
       this.isDeleting = true;
-      console.log(id);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      this.doctors.find((x) => x.doctorId === id).dltDialog.isShow = false;
+      // console.log(id);
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      var response = await axios
+        .delete(APIHelper.getAPIDefault() + "Patients/" + id)
+        .catch(function (error) {
+          console.log(error);
+        });
+      console.log(response.status);
+      if (response.status == 204) {
+        success = true;
+      }
 
-      // this.doctors = CommonHelper.removeItem(this.doctors, item);
-      // console.log(this.doctors.length);
-      this.fetchDoctor();
-      this.setSnackbar("Delete Successful", "success");
+      this.patients.find((x) => x.patientId === id).dltDialog.isShow = false;
+      if (success) {
+        if (this.page != 1) {
+          this.page = 1;
+        } else {
+          this.fetchPatient(this.page, this.pageSize, null);
+        }
+        this.setSnackbar("Delete Successful", "success");
+      } else {
+        this.setSnackbar("Delete failed", "error");
+      }
+
       this.isDeleting = false;
     },
     setSnackbar(message, type) {
@@ -214,8 +285,15 @@ export default {
     },
   },
   components: {
-    CreatePatientForm,
     EditPatientForm,
+  },
+  watch: {
+    page: function () {
+      this.fetchPatient(this.page, this.pageSize, this.searchValue);
+    },
   },
 };
 </script>
+
+<style scoped>
+</style>

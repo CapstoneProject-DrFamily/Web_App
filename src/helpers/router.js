@@ -1,10 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
 
-import LoginPage from "../components/pages/Login.vue";
-import AdminPage from "../components/base/AdminBase.vue";
-import DoctorBase from "../components/pages/doctor/DoctorBase.vue";
-
 
 Vue.use(Router);
 
@@ -13,19 +9,19 @@ export const router = new Router({
   routes: [
     {
       path: "/",
-      component: LoginPage,
+      component: () => import("../components/pages/Login"),
     },
     {
       path: "/login",
-      component: LoginPage,
+      component: () => import("../components/pages/Login"),
     },
     {
       path: "/admin",
-      component: AdminPage,
+      component: () => import("../components/base/AdminBase"),
       children: [
         {
           path: "doctor",
-          component: DoctorBase,
+          component: () => import("../components/pages/doctor/DoctorBase"),
           
           children: [
             {
@@ -51,6 +47,14 @@ export const router = new Router({
         {
           path: "symptom",
           component: () => import("../components/pages/symptom/SymptomPage"),
+        },
+        {
+          path: "service",
+          component: () => import("../components/pages/service/ServicePage"),
+        },
+        {
+          path: "transaction",
+          component: () => import("../components/pages/transaction/TransactionPage"),
         },
       ],
     },

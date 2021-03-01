@@ -15,11 +15,13 @@
         height="200px"
       ></v-img>
       <v-card>
-        <row>
-          <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-            Update Medicine
-          </p>
-        </row>
+            <v-row>
+          <v-col>
+            <p class="text-center customHeader font-weight-bold pt-6 pb-6">
+              Update Medicine
+            </p>
+          </v-col>
+        </v-row>
 
         <v-card-text>
           <v-container>
@@ -93,7 +95,7 @@
                   type="submit"
                   v-on:click="updateMedicine()"
                 >
-                  Saved
+                  Save
                 </v-btn>
               </v-row>
             </v-form>

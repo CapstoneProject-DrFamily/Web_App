@@ -15,18 +15,27 @@
         height="200px"
       ></v-img>
       <v-card>
-        <row>
-          <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-            Update Doctor
-          </p>
-        </row>
+         <v-row>
+          <v-col>
+            <p class="text-center customHeader font-weight-bold pt-6 pb-6">
+              Update Doctor
+            </p>
+          </v-col>
+        </v-row>
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
-            <v-img
+            <v-img v-if="temporaryData.profile.image != null"
               contain
               max-height="80%"
               max-width="80%"
               :src="temporaryData.profile.image"
+            ></v-img>
+
+            <v-img v-if="temporaryData.profile.image == null"
+              contain
+              max-height="80%"
+              max-width="80%"
+              src="https://www.thermaxglobal.com/wp-content/uploads/2020/05/image-not-found.jpg"
             ></v-img>
           </v-row>
           <v-row justify="center" v-if="imageData != null">
@@ -36,6 +45,8 @@
               max-width="80%"
               :src="imagePreview"
             ></v-img>
+
+            
           </v-row>
           <v-file-input
             @change="onChange = true"
@@ -51,7 +62,7 @@
 
         <v-card-text>
           <v-container>
-            <v-form @submit.prevent>
+            <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Account Detail</div>
               <v-text-field
                 @change="onChange = true"
@@ -73,6 +84,9 @@
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
+                :rules="[
+                  v => v.length < 50 && v.length > 3 || 'Your fullname must between 3 - 50 character',
+                ]"
               ></v-text-field>
               <v-radio-group
                 @change="onChange = true"
@@ -131,6 +145,7 @@
                 label="Phone*"
                 prepend-icon="mdi-phone"
                 required
+                disabled
               ></v-text-field>
               <v-text-field
                 @change="onChange = true"
@@ -163,6 +178,9 @@
                 label="Degree*"
                 prepend-icon="mdi-license"
                 required
+                :rules="[
+                  v => v.length < 50 && v.length > 3 || 'Your degree must between 3 - 50 character',
+                ]"
               ></v-text-field>
               <v-text-field
                 @change="onChange = true"
@@ -172,8 +190,10 @@
                 label="Experience*"
                 prepend-icon="mdi-trophy-award"
                 required
+                :rules="[
+                  v => v.length < 50 && v.length > 3 || 'Your experience must be filled',
+                ]"
               ></v-text-field>
-
               <v-select
                 @change="onChange = true"
                 prepend-icon="mdi-needle"
@@ -191,6 +211,9 @@
                 label="School*"
                 prepend-icon="mdi-school"
                 required
+                   :rules="[
+                  v => v.length < 50 && v.length > 3 || 'Your school must be filled',
+                ]"
                 v-model="temporaryData.school"
               ></v-text-field>
               <v-textarea
@@ -199,12 +222,15 @@
                 v-model="temporaryData.description"
                 label="Description*"
                 solo
+                   :rules="[
+                  v => v.length < 50 && v.length > 3 || 'Your description must be filled',
+                ]"
                 prepend-icon="mdi-account-details"
                 required
               ></v-textarea>
 
-              <v-row justify="center">
-                   <v-btn
+              <v-row justify="center" class="pt-3">
+                <v-btn
                   color="info"
                   class="mr-4"
                   v-on:click="Reset()"
@@ -230,7 +256,7 @@
                   type="submit"
                   v-on:click="updateDoctor()"
                 >
-                  Saved
+                  Save
                 </v-btn>
               </v-row>
             </v-form>
@@ -255,6 +281,7 @@ export default {
   props: ["doctor"],
   data() {
     return {
+      valid: false,
       temporaryData: [],
       onChange: false,
       specialities: [],
@@ -268,12 +295,14 @@ export default {
   methods: {
     Reset() {
       this.onChange = false;
-       this.temporaryData = JSON.parse(JSON.stringify(this.doctor));
+      this.temporaryData = JSON.parse(JSON.stringify(this.doctor));
     },
 
     Cancel() {
       if (this.onChange) {
-        this.$confirm("Do you really want to exit? Your change will all lost.").then((res) => {
+        this.$confirm(
+          "Do you really want to exit? Your change will all lost."
+        ).then((res) => {
           if (res) {
             this.temporaryData = JSON.parse(JSON.stringify(this.doctor));
             this.show = false;
@@ -282,7 +311,6 @@ export default {
       } else {
         this.show = false;
       }
- 
     },
     changeSaved() {
       console.log(this.onChange);
@@ -302,13 +330,18 @@ export default {
     },
 
     async updateDoctor() {
+       this.$refs.form.validate();
+      if (!this.valid) {
+        return;
+      }
+
       var isUpdated = false;
 
       this.loading = true;
       if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
-        this.doctor.profile.image = imgURL;
+        this.temporaryData.profile.image = imgURL;
       }
 
       let profileDetail = {
@@ -371,7 +404,6 @@ export default {
         // Start the reader job - read file as a data url (base64 format)
         reader.readAsDataURL(this.imageData);
       } else {
-        
         this.imageData = null;
         this.imagePreview = defaultImage;
       }

@@ -58,7 +58,11 @@
         <tbody>
           <tr v-for="medicine in medicines" :key="medicine.medicineId">
             <td>{{ medicine.name }}</td>
-            <td>{{ medicine.form }}</td>
+            <td>
+              <div v-for="detail in medicine.detailForm" :key="detail">
+                {{ detail }}
+              </div>
+            </td>
             <td>{{ medicine.strength }}</td>
 
             <td>
@@ -174,6 +178,15 @@ export default {
     };
   },
   methods: {
+    splitForm: function (form) {
+      console.log(form);
+      var data = form.split(";");
+      var result = "";
+      for (let i = 0; i < data.length; i++) {
+        result = result + data[i] + "\n";
+      }
+      return result;
+    },
     searchMedicine() {
       this.searchValue = this.searchBoxValue;
       if (this.page != 1) {
@@ -213,6 +226,8 @@ export default {
         for (let i = 0; i < response.data.medicines.length; i++) {
           if (!response.data.medicines[i].disable) {
             let name = "dialog" + response.data.medicines[i].medicineId;
+            let detailForm = response.data.medicines[i].form.split(";");
+            response.data.medicines[i].detailForm = detailForm;
             let dltDialog = { name: name, isShow: false };
             response.data.medicines[i].dltDialog = dltDialog;
             this.medicines.push(response.data.medicines[i]);

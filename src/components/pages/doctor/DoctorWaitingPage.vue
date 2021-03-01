@@ -63,15 +63,25 @@
                 height="100"
               ></v-img>
             </td>
+
             <td>{{ doctor.profile.fullName }}</td>
             <td>{{ doctor.specialty.name }}</td>
             <td>{{ doctor.profile.email }}</td>
 
             <td>
-              <waiting-doctor-info :doctor="doctor"></waiting-doctor-info>
+              <waiting-doctor-info
+                :doctor="doctor"
+                @approved="approveFromDetail"
+                @denied="deniedFromDetail"
+              ></waiting-doctor-info>
             </td>
             <td>
-              <v-btn tile color="error" class="rounded-pill">
+              <v-btn
+                tile
+                color="error"
+                class="rounded-pill"
+                @click="confirmDeny(doctor)"
+              >
                 <v-icon> mdi-cancel </v-icon>
               </v-btn>
             </td>
@@ -80,31 +90,36 @@
                 tile
                 color="success"
                 class="rounded-pill"
-                @click="approveDoctor(doctor)"
+                @click="confirmApprove(doctor)"
               >
                 <v-icon> mdi-check </v-icon>
               </v-btn>
             </td>
           </tr>
+          <td class="text-center" colspan="10">
+            <div class="pa-10" v-if="doctors.length == 0 && !loading">
+              No data found
+            </div>
+
+            <div class="text-center pt-6 pb-6" v-if="loading">
+              <v-progress-circular
+                :size="50"
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+          </td>
         </tbody>
       </template>
     </v-simple-table>
 
-    <div class="text-center pt-6" v-if="loading">
-      <v-progress-circular
-        :size="50"
-        color="primary"
-        indeterminate
-      ></v-progress-circular>
-    </div>
-
-    <v-row justify="center" v-if="!loading">
+    <!-- <v-row justify="center" v-if="!loading">
       <v-col cols="8">
         <v-container class="max-width">
           <v-pagination v-model="page" class="my-4" :length="10"></v-pagination>
         </v-container>
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 
@@ -132,13 +147,52 @@ export default {
     };
   },
   methods: {
-    async approveDoctor(doctor) {
+    deniedFromDetail(isSuccess) {
+        if(isSuccess) {
+           this.setSnackbar("Action successful", "success");
+           this.fetchDoctor();
+      } else {
+        this.setSnackbar("Action failed", "error");
+        }
+    },
+
+    approveFromDetail(isApproved) {
+      if (isApproved) {
+        this.setSnackbar("Action successful", "success");
+      } else {
+        this.setSnackbar("Action failed", "error");
+      }
+      this.fetchDoctor();
+    },
+
+    confirmDeny(doctor) {
+      this.$confirm("Do you want to deny this doctor ?").then((res) => {
+        if (res) {
+          this.approveDoctor(doctor, false);
+        } else {
+          return;
+        }
+      });
+    },
+
+    confirmApprove(doctor) {
+      this.$confirm("Do you want to approve this doctor ?").then((res) => {
+        if (res) {
+          this.approveDoctor(doctor, true);
+        } else {
+          return;
+        }
+      });
+    },
+
+    async approveDoctor(doctor, isApprove) {
       let data = {
-        disabled: false,
+        disabled: isApprove == true ? false : true,
         accountId: doctor.profile.users[0].accountId,
         roleId: doctor.profile.users[0].roleId,
         profileId: doctor.profile.users[0].profileId,
-        waiting: false
+        waiting: false,
+        username: doctor.profile.users[0].username,
       };
 
       var response = await axios
@@ -146,8 +200,13 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
+      if (response.status == 200) {
+        this.setSnackbar("Action successful", "success");
+      } else {
+        this.setSnackbar("Action failed", "error");
+      }
 
-        console.log(response);
+      this.fetchDoctor();
     },
     async fetchDoctor() {
       this.loading = true;

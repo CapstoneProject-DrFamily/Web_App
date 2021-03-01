@@ -16,11 +16,13 @@
         height="200px"
       ></v-img>
       <v-card>
-        <row>
-          <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-            Create New Symptom
-          </p>
-        </row>
+          <v-row>
+          <v-col>
+            <p class="text-center customHeader font-weight-bold pt-6 pb-6">
+              Create Symptom
+            </p>
+          </v-col>
+        </v-row>
         <v-card-text>
           <v-container>
                          <v-form @submit.prevent ref="form" v-model="valid">
@@ -81,7 +83,7 @@
                   type="submit"
                   v-on:click="createSymptom()"
                 >
-                  Saved
+                  Create
                 </v-btn>
               </v-row>
             </v-form>

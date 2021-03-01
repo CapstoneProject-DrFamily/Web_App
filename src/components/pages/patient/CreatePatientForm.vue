@@ -16,11 +16,13 @@
         height="200px"
       ></v-img>
       <v-card>
-        <row>
-          <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-            Create New Patient
-          </p>
-        </row>
+           <v-row>
+          <v-col>
+            <p class="text-center customHeader font-weight-bold pt-6 pb-6">
+              Create Patient
+            </p>
+          </v-col>
+        </v-row>
         <v-card-text>
           <v-row justify="center">
             <v-img

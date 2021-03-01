@@ -34,54 +34,45 @@
       </v-col>
       <v-col cols="1">
         <div class="pt-1 pl-1">
-          <v-btn icon @click="searchDoctor">
+          <v-btn icon @click="searchService">
             <v-icon>mdi-magnify</v-icon>
           </v-btn>
         </div>
       </v-col>
     </v-row>
 
-    <!-- <doctor-form @created="addDoctor"></doctor-form> -->
+    <create-service-form @created="addService"></create-service-form>
 
     <v-simple-table class="elevation-1">
       <template v-slot:default>
         <thead>
           <tr>
-            <th class="text-left">Image</th>
-            <th class="text-left">Name</th>
-            <th class="text-left">Speciality</th>
-            <th class="text-left">Email</th>
-
+            <th class="text-left">Service name</th>
+            <th class="text-left">Price</th>
+            <th class="text-left">Description</th>
             <th class="text-left"></th>
             <th class="text-left"></th>
           </tr>
         </thead>
 
         <tbody>
-          <tr v-for="doctor in doctors" :key="doctor.doctorId">
-            <td class="pt-6 pb-6">
-              <v-img
-                :src="doctor.profile.image"
-                width="100"
-                height="100"
-              ></v-img>
-            </td>
-            <td>{{ doctor.profile.fullName }}</td>
-            <td>{{ doctor.specialty.name }}</td>
-            <td>{{ doctor.profile.email }}</td>
+          <tr v-for="service in services" :key="service.serviceId">
+            <td>{{ service.serviceName }}</td>
+            <td>{{ service.servicePrice }}</td>
+            <td>{{ service.serviceDescription }}</td>
 
             <td>
-              <edit-doctor-form
-                :doctor="doctor"
-                @updated="updateDoctor"
-              ></edit-doctor-form>
+              <edit-service-form
+                :service="service"
+                @updated="updateService"
+              ></edit-service-form>
             </td>
             <td>
               <div class="text-center">
                 <v-dialog
                   width="500"
                   :retain-focus="false"
-                  v-model="doctor.dltDialog.isShow"
+                  v-model="service.dltDialog.isShow"
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn tile color="error" v-bind="attrs" v-on="on">
@@ -91,7 +82,7 @@
 
                   <v-card>
                     <v-card-title class="headline red lighten-1">
-                      Confirm delete this doctor
+                      Confirm delete this service
                     </v-card-title>
 
                     <v-card-text>
@@ -103,7 +94,7 @@
                       <v-btn
                         color="grey"
                         text
-                        @click="doctor.dltDialog.isShow = false"
+                        @click="service.dltDialog.isShow = false"
                       >
                         Cancel
                       </v-btn>
@@ -113,7 +104,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteDoctor(doctor.doctorId)"
+                        @click.prevent="deleteService(service.serviceId)"
                       >
                         I accept
                       </v-btn>
@@ -124,7 +115,7 @@
             </td>
           </tr>
           <td class="text-center" colspan="10">
-            <div class="pa-10" v-if="doctors.length == 0 && !loading">
+            <div class="pa-10" v-if="services.length == 0 && !loading">
               No data found
             </div>
 
@@ -139,8 +130,6 @@
         </tbody>
       </template>
     </v-simple-table>
-
- 
 
     <v-row justify="center" v-if="!loading">
       <v-col cols="8">
@@ -157,17 +146,20 @@
 </template>
 
 <script>
-// import DoctorForm from "./CreateDoctorForm.vue";
-import EditDoctorForm from "./EditDoctorForm.vue";
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
-// import CommonHelper from '../../../helpers/common';
+import CreateServiceForm from "./CreateServiceForm.vue";
+import EditServiceForm from "./EditServiceForm.vue";
+
 
 export default {
   mounted() {
-    this.fetchDoctor(this.page, this.pageSize, this.searchValue);
+    this.fetchService(this.page, this.pageSize, this.searchValue);
   },
-
+  components: {
+    CreateServiceForm,
+    EditServiceForm,
+  },
   data() {
     return {
       type: "success",
@@ -176,7 +168,7 @@ export default {
       isDeleting: false,
       loading: false,
 
-      doctors: [],
+      services: [],
       page: 1,
       pageSize: 10,
       totalPage: null,
@@ -185,27 +177,30 @@ export default {
     };
   },
   methods: {
-      searchDoctor() {
+    searchService() {
       this.searchValue = this.searchBoxValue;
       if (this.page != 1) {
         this.page = 1;
       } else {
-        this.fetchDoctor(this.page, this.pageSize, this.searchValue);
+        this.fetchService(this.page, this.pageSize, this.searchValue);
       }
     },
-    async fetchDoctor(page, pageSize, value) {
+
+    async fetchService(page, pageSize, value) {
       this.loading = true;
-      this.doctors = [];
+      this.services = [];
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      var url =
+      let url = null;
+
+      url =
         value == null
           ? APIHelper.getAPIDefault() +
-            "Doctors/paging?PageIndex=" +
+            "Services/paging?PageIndex=" +
             page +
             "&PageSize=" +
             pageSize
-          : APIHelper.getAPIDefault() +
-            "Doctors/paging?PageIndex=" +
+          : APIHelper.getAPIDefault()+
+            "Services/paging?PageIndex=" +
             page +
             "&PageSize=" +
             pageSize +
@@ -217,55 +212,52 @@ export default {
       });
 
       if (response.status == 200) {
+         
         this.totalPage = response.data.totalPages;
-        console.log(response.data.doctors);
-        for (let i = 0; i < response.data.doctors.length; i++) {
-          if (!response.data.doctors[i].profile.users[0].waiting) {
-            let name = "dialog" + response.data.doctors[i].doctorId;
+        for (let i = 0; i < response.data.services.length; i++) {
+          if (!response.data.services[i].disable) {
+            let name = "dialog" + response.data.services[i].serviceId;
             let dltDialog = { name: name, isShow: false };
-            response.data.doctors[i].dltDialog = dltDialog;
-            response.data.doctors[i].profile.birthday = response.data.doctors[
-              i
-            ].profile.birthday.substring(0, 10);
-            this.doctors.push(response.data.doctors[i]);
+            response.data.services[i].dltDialog = dltDialog;
+            this.services.push(response.data.services[i]);
+            // console.log(response.data.medicines[i]);
           }
         }
-        console.log(this.doctors.length);
       }
       this.loading = false;
     },
-    updateDoctor(isUpdated) {
+    updateService(isUpdated) {
       if (isUpdated) {
         if (this.page != 1) {
           this.page = 1;
         } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
+          this.fetchService(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Update Doctor Successful", "success");
+        this.setSnackbar("Update Service Successful", "success");
       } else {
-        this.setSnackbar("Update Doctor Failed", "error");
+        this.setSnackbar("Update Service Failed", "error");
       }
     },
-    addDoctor(isSuccess) {
+    addService(isSuccess) {
       if (isSuccess) {
-         if (this.page != 1) {
+        if (this.page != 1) {
           this.page = 1;
         } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
+          this.fetchService(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Add Doctor Successful", "success");
+        this.setSnackbar("Add Service Successful", "success");
       } else {
-        this.setSnackbar("Add Doctor Failed", "error");
+        this.setSnackbar("Add Service Failed", "error");
       }
     },
-    async deleteDoctor(id) {
+    async deleteService(id) {
       var success = false;
       this.isDeleting = true;
 
       // console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Doctors/" + id)
+        .delete(APIHelper.getAPIDefault() + "Services/" + id)
         .catch(function (error) {
           console.log(error);
         });
@@ -274,14 +266,14 @@ export default {
         success = true;
       }
 
-      this.doctors.find((x) => x.doctorId === id).dltDialog.isShow = false;
+      this.services.find((x) => x.serviceId === id).dltDialog.isShow = false;
       if (success) {
-         if (this.page != 1) {
+        if (this.page != 1) {
           this.page = 1;
         } else {
-          this.fetchDoctor(this.page, this.pageSize, null);
+          this.fetchService(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Delete Successful", "success");
+        this.setSnackbar("Delete successful", "success");
       } else {
         this.setSnackbar("Delete failed", "error");
       }
@@ -294,13 +286,9 @@ export default {
       this.type = type;
     },
   },
-  components: {
-    // DoctorForm,
-    EditDoctorForm,
-  },
-    watch: {
+  watch: {
     page: function () {
-      this.fetchDoctor(this.page, this.pageSize, this.searchValue);
+      this.fetchService(this.page, this.pageSize, this.searchValue);
     },
   },
 };

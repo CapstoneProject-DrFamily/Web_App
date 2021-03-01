@@ -15,11 +15,13 @@
         height="200px"
       ></v-img>
       <v-card>
-        <row>
-          <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-            Doctor Info
-          </p>
-        </row>
+         <v-row>
+          <v-col>
+            <p class="text-center customHeader font-weight-bold pt-6 pb-6">
+             Doctor Info
+            </p>
+          </v-col>
+        </v-row>
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
             <v-img
@@ -57,7 +59,7 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                  filled
+                filled
                 rounded
                 readonly
                 v-model="temporaryData.profile.fullName"
@@ -75,51 +77,22 @@
                 <v-radio value="Female" label="Female"> </v-radio>
               </v-radio-group>
 
-              <v-dialog
-                ref="dialog"
-                v-model="modal"
-                :return-value.sync="temporaryData.profile.birthday"
-                persistent
-                width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    @change="onChange = true"
-                    class="pt-4"
-                     filled
+              <v-text-field
+                @change="onChange = true"
+                class="pt-4"
+                filled
                 rounded
                 readonly
-                    v-model="temporaryData.profile.birthday"
-                    label="Birthday"
-                    prepend-icon="mdi-calendar"
-                    hint="MM/DD/YYYY format"
-                  
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="temporaryData.profile.birthday"
-                  scrollable
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="modal = false">
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.dialog.save(temporaryData.profile.birthday)"
-                  >
-                    OK
-                  </v-btn>
-                </v-date-picker>
-              </v-dialog>
+                v-model="temporaryData.profile.birthday"
+                label="Birthday"
+                prepend-icon="mdi-calendar"
+                hint="MM/DD/YYYY format"
+              ></v-text-field>
 
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                  filled
+                filled
                 rounded
                 readonly
                 v-model="temporaryData.profile.phone"
@@ -130,7 +103,7 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                  filled
+                filled
                 rounded
                 readonly
                 v-model="temporaryData.profile.email"
@@ -142,7 +115,7 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                  filled
+                filled
                 rounded
                 readonly
                 v-model="temporaryData.profile.idCard"
@@ -157,7 +130,7 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"
-                  filled
+                filled
                 rounded
                 readonly
                 v-model="temporaryData.degree"
@@ -168,7 +141,7 @@
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                  filled
+                filled
                 rounded
                 readonly
                 v-model="temporaryData.experience"
@@ -185,14 +158,14 @@
                 item-value="specialtyId"
                 v-model="temporaryData.specialtyId"
                 label="Speciality"
-                  filled
+                filled
                 rounded
-                readonly              
+                readonly
               ></v-select>
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
-                  filled
+                filled
                 rounded
                 readonly
                 label="School"
@@ -205,7 +178,7 @@
                 class="pt-4"
                 v-model="temporaryData.description"
                 label="Description"
-                  filled
+                filled
                 rounded
                 readonly
                 prepend-icon="mdi-account-details"
@@ -225,7 +198,7 @@
                 <v-btn
                   color="error"
                   class="mr-4"
-                  v-on:click="denyDoctor()"
+                  v-on:click="confirmDialog(false)"
                   v-if="!loading"
                 >
                   Deny
@@ -237,7 +210,7 @@
                   color="success"
                   class="mr-4"
                   type="submit"
-                  v-on:click="approveDoctor()"
+                  v-on:click="confirmDialog(true)"
                 >
                   Approve
                 </v-btn>
@@ -274,15 +247,79 @@ export default {
     };
   },
   methods: {
-      denyDoctor() {
-          console.log('deny');
-      },
-      closeDialog() {
-          this.show = false;
-      },
-      approveDoctor() {
-          console.log('approved');
-      },
+    confirmDialog(typed) {
+      if (typed) {
+        this.$confirm("Do you want to approve this doctor ?").then((res) => {
+          if (res) {
+            this.approveDoctor();
+          } else {
+            return;
+          }
+        });
+      } else {
+        this.$confirm("Do you want to deny this doctor ?").then((res) => {
+          if (res) {
+            this.denyDoctor();
+          } else {
+            return;
+          }
+        });
+      }
+    },
+
+    async denyDoctor() {
+           var isSuccess = false;
+      this.loading = true;
+
+      let data = {
+        disabled: true,
+        accountId: this.doctor.profile.users[0].accountId,
+        roleId: this.doctor.profile.users[0].roleId,
+        profileId: this.doctor.profile.users[0].profileId,
+        waiting: false,
+        username: this.doctor.profile.users[0].username,
+      };
+      var response = await axios
+        .put(APIHelper.getAPIDefault() + "Users", data)
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      if (response.status == 200) {
+        isSuccess = true;
+      }
+      this.show = false;
+      this.$emit("denied", isSuccess);
+      this.loading = false;
+    },
+    closeDialog() {
+      this.show = false;
+    },
+    async approveDoctor() {
+      var isApproved = false;
+      this.loading = true;
+
+      let data = {
+        disabled: false,
+        accountId: this.doctor.profile.users[0].accountId,
+        roleId: this.doctor.profile.users[0].roleId,
+        profileId: this.doctor.profile.users[0].profileId,
+        waiting: false,
+        username: this.doctor.profile.users[0].username,
+      };
+      var response = await axios
+        .put(APIHelper.getAPIDefault() + "Users", data)
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      if (response.status == 200) {
+        isApproved = true;
+      }
+      this.show = false;
+      this.$emit("approved", isApproved);
+      this.loading = false;
+    },
     async fetchSpecialities() {
       var response = await axios
         .get(APIHelper.getAPIDefault() + "Specialty")

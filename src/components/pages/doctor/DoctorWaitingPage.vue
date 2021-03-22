@@ -58,15 +58,15 @@
           <tr v-for="doctor in doctors" :key="doctor.doctorId">
             <td class="pt-6 pb-6">
               <v-img
-                :src="doctor.profile.image"
+                :src="doctor.doctorNavigation.image"
                 width="100"
                 height="100"
               ></v-img>
             </td>
 
-            <td>{{ doctor.profile.fullName }}</td>
+            <td>{{ doctor.doctorNavigation.fullName }}</td>
             <td>{{ doctor.specialty.name }}</td>
-            <td>{{ doctor.profile.email }}</td>
+            <td>{{ doctor.doctorNavigation.email }}</td>
 
             <td>
               <waiting-doctor-info
@@ -188,11 +188,11 @@ export default {
     async approveDoctor(doctor, isApprove) {
       let data = {
         disabled: isApprove == true ? false : true,
-        accountId: doctor.profile.users[0].accountId,
-        roleId: doctor.profile.users[0].roleId,
-        profileId: doctor.profile.users[0].profileId,
+        accountId: doctor.doctorNavigation.account.accountId,
+        roleId: doctor.doctorNavigation.account.roleId,
+        profileId: doctor.doctorNavigation.profileId,
         waiting: false,
-        username: doctor.profile.users[0].username,
+        username: doctor.doctorNavigation.account.username,
       };
 
       var response = await axios
@@ -224,9 +224,9 @@ export default {
           let name = "dialog" + response.data[i].doctorId;
           let dltDialog = { name: name, isShow: false };
           response.data[i].dltDialog = dltDialog;
-          response.data[i].profile.birthday = response.data[
+          response.data[i].doctorNavigation.birthday = response.data[
             i
-          ].profile.birthday.substring(0, 10);
+          ].doctorNavigation.birthday.substring(0, 10);
           // let data = response.data[i];
           // console.log(data);
           this.doctors.push(response.data[i]);

@@ -59,14 +59,14 @@
           <tr v-for="patient in patients" :key="patient.patientId">
             <td class="pt-6 pb-6">
               <v-img
-                :src="patient.profile.image"
+                :src="patient.patientNavigation.image"
                 width="100"
                 height="100"
               ></v-img>
             </td>
-            <td>{{ patient.profile.fullName }}</td>
-            <td>{{ patient.profile.phone }}</td>
-            <td>{{ patient.profile.email }}</td>
+            <td>{{ patient.patientNavigation.fullName }}</td>
+            <td>{{ patient.patientNavigation.phone }}</td>
+            <td>{{ patient.patientNavigation.email }}</td>
 
             <td>
               <edit-patient-form
@@ -222,13 +222,13 @@ export default {
         this.totalPage = response.data.totalPages;
 
         for (let i = 0; i < response.data.patients.length; i++) {
-          if (!response.data.patients[i].profile.users[0].waiting) {
+          if (!response.data.patients[i].patientNavigation.account.waiting) {
             let name = "dialog" + response.data.patients[i].patientId;
             let dltDialog = { name: name, isShow: false };
             response.data.patients[i].dltDialog = dltDialog;
-            response.data.patients[i].profile.birthday = response.data.patients[
+            response.data.patients[i].patientNavigation.birthday = response.data.patients[
               i
-            ].profile.birthday.substring(0, 10);
+            ].patientNavigation.birthday.substring(0, 10);
             this.patients.push(response.data.patients[i]);
           }
         }

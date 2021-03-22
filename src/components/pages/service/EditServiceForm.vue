@@ -37,6 +37,19 @@
                 required
                 :rules="[(v) => !!v || 'Please enter service name']"
               ></v-text-field>
+        
+              <v-select
+                @change="onChange = true"
+                prepend-icon="mdi-needle"
+                :items="specialities"
+                item-text="name"
+                item-value="specialtyId"
+                v-model="temporaryData.specialtyId"
+                label="Speciality*"
+                solo
+               readonly
+              ></v-select>
+
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"
@@ -103,6 +116,7 @@ export default {
   created() {
     this.temporaryData = JSON.parse(JSON.stringify(this.service));
     console.log(this.temporaryData);
+    this.fetchSpecialities();
   },
   props: ["service"],
   data() {
@@ -113,9 +127,24 @@ export default {
       modal: false,
       show: false,
       loading: false,
+      specialities: [],
     };
   },
   methods: {
+ async fetchSpecialities() {
+      var response = await axios
+        .get(APIHelper.getAPIDefault() + "Specialties")
+        .catch(function (error) {
+          console.log(error);
+        });
+      if (response.status == 200) {
+        for (let i = 0; i < response.data.length; i++) {
+          // console.log(response.data[i]);
+          this.specialities.push(response.data[i]);
+        }
+      }
+    },
+
     resetForm() {
       this.onChange = false;
       this.temporaryData = JSON.parse(JSON.stringify(this.service));
@@ -145,8 +174,7 @@ export default {
       if (!this.valid) {
         return;
       }
-
-        console.log(this.temporaryData);
+    
       this.loading = true;
 
       var response = await axios

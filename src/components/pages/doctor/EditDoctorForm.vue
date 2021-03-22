@@ -24,14 +24,14 @@
         </v-row>
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
-            <v-img v-if="temporaryData.profile.image != null"
+            <v-img v-if="temporaryData.doctorNavigation.image != null"
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.profile.image"
+              :src="temporaryData.doctorNavigation.image"
             ></v-img>
 
-            <v-img v-if="temporaryData.profile.image == null"
+            <v-img v-if="temporaryData.doctorNavigation.image == null"
               contain
               max-height="80%"
               max-width="80%"
@@ -68,7 +68,7 @@
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="temporaryData.profile.users[0].username"
+                v-model="temporaryData.doctorNavigation.account.username"
                 readonly
                 label="Username (Your phone number)*"
                 prepend-icon="mdi-account-box"
@@ -80,7 +80,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.fullName"
+                v-model="temporaryData.doctorNavigation.fullName"
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
@@ -90,7 +90,7 @@
               ></v-text-field>
               <v-radio-group
                 @change="onChange = true"
-                v-model="temporaryData.profile.gender"
+                v-model="temporaryData.doctorNavigation.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -101,7 +101,7 @@
               <v-dialog
                 ref="dialog"
                 v-model="modal"
-                :return-value.sync="temporaryData.profile.birthday"
+                :return-value.sync="temporaryData.doctorNavigation.birthday"
                 persistent
                 width="290px"
               >
@@ -110,7 +110,7 @@
                     @change="onChange = true"
                     class="pt-4"
                     solo
-                    v-model="temporaryData.profile.birthday"
+                    v-model="temporaryData.doctorNavigation.birthday"
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -120,7 +120,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="temporaryData.profile.birthday"
+                  v-model="temporaryData.doctorNavigation.birthday"
                   scrollable
                 >
                   <v-spacer></v-spacer>
@@ -130,7 +130,7 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.dialog.save(temporaryData.profile.birthday)"
+                    @click="$refs.dialog.save(temporaryData.doctorNavigation.birthday)"
                   >
                     OK
                   </v-btn>
@@ -141,7 +141,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.phone"
+                v-model="temporaryData.doctorNavigation.phone"
                 label="Phone*"
                 prepend-icon="mdi-phone"
                 required
@@ -151,7 +151,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.email"
+                v-model="temporaryData.doctorNavigation.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -161,7 +161,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.idCard"
+                v-model="temporaryData.doctorNavigation.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -191,7 +191,7 @@
                 prepend-icon="mdi-trophy-award"
                 required
                 :rules="[
-                  v => v.length < 50 && v.length > 3 || 'Your experience must be filled',
+                  v => v.length < 50 && v.length > 0 || 'Your experience must be filled',
                 ]"
               ></v-text-field>
               <v-select
@@ -317,7 +317,7 @@ export default {
     },
     async fetchSpecialities() {
       var response = await axios
-        .get(APIHelper.getAPIDefault() + "Specialty")
+        .get(APIHelper.getAPIDefault() + "Specialties")
         .catch(function (error) {
           console.log(error);
         });
@@ -341,18 +341,18 @@ export default {
       if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
-        this.temporaryData.profile.image = imgURL;
+        this.temporaryData.doctorNavigation.image = imgURL;
       }
 
       let profileDetail = {
-        profileId: this.temporaryData.profileId,
-        fullname: this.temporaryData.profile.fullName,
-        birthday: this.temporaryData.profile.birthday,
-        gender: this.temporaryData.profile.gender,
-        phone: this.temporaryData.profile.phone,
-        image: this.temporaryData.profile.image,
-        email: this.temporaryData.profile.email,
-        idCard: this.temporaryData.profile.idCard,
+        profileId: this.temporaryData.doctorNavigation.profileId,
+        fullname: this.temporaryData.doctorNavigation.fullName,
+        birthday: this.temporaryData.doctorNavigation.birthday,
+        gender: this.temporaryData.doctorNavigation.gender,
+        phone: this.temporaryData.doctorNavigation.phone,
+        image: this.temporaryData.doctorNavigation.image,
+        email: this.temporaryData.doctorNavigation.email,
+        idCard: this.temporaryData.doctorNavigation.idCard,
       };
 
       let profileDoctor = {

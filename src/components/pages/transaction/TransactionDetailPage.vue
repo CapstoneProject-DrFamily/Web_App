@@ -92,7 +92,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.doctor.profile.fullName"
+                v-model="transaction.doctor.doctorNavigation.fullName"
                 label="Doctor"
                 prepend-icon="mdi-license"
               ></v-text-field>
@@ -105,7 +105,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.patient.profile.fullName"
+                v-model="transaction.patient.patientNavigation.fullName"
                 label="Patient"
                 prepend-icon="mdi-license"
                 required

@@ -19,13 +19,13 @@
     <v-divider class="mb-1" />
 
     <v-list nav dense class="id-drawer">
-      <v-list-item link to="/dashboard">
+      <!-- <v-list-item link to="/admin/">
         <v-list-item-icon>
           <v-icon>mdi-view-dashboard</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Dashboard</v-list-item-title>
-      </v-list-item>
-
+      </v-list-item> -->
+      
       <v-list-group prepend-icon="mdi-account-circle" no-action>
         <template v-slot:activator >
           <v-list-item-content>

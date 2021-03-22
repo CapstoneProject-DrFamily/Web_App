@@ -61,14 +61,14 @@
           <tr v-for="doctor in doctors" :key="doctor.doctorId">
             <td class="pt-6 pb-6">
               <v-img
-                :src="doctor.profile.image"
+                :src="doctor.doctorNavigation.image"
                 width="100"
                 height="100"
               ></v-img>
             </td>
-            <td>{{ doctor.profile.fullName }}</td>
+            <td>{{ doctor.doctorNavigation.fullName }}</td>
             <td>{{ doctor.specialty.name }}</td>
-            <td>{{ doctor.profile.email }}</td>
+            <td>{{ doctor.doctorNavigation.email }}</td>
 
             <td>
               <edit-doctor-form
@@ -220,13 +220,13 @@ export default {
         this.totalPage = response.data.totalPages;
         console.log(response.data.doctors);
         for (let i = 0; i < response.data.doctors.length; i++) {
-          if (!response.data.doctors[i].profile.users[0].waiting) {
+          if (!response.data.doctors[i].doctorNavigation.account.waiting) {
             let name = "dialog" + response.data.doctors[i].doctorId;
             let dltDialog = { name: name, isShow: false };
             response.data.doctors[i].dltDialog = dltDialog;
-            response.data.doctors[i].profile.birthday = response.data.doctors[
+            response.data.doctors[i].doctorNavigation.birthday = response.data.doctors[
               i
-            ].profile.birthday.substring(0, 10);
+            ].doctorNavigation.birthday.substring(0, 10);
             this.doctors.push(response.data.doctors[i]);
           }
         }

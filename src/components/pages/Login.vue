@@ -80,7 +80,7 @@ export default {
           if (response.status == 200) {
             if (response.data.role == "Admin") {
               localStorage.setItem("token", response.data.token);
-              router.push("admin");
+              router.push("admin/doctor/active");
             }
           }
         })

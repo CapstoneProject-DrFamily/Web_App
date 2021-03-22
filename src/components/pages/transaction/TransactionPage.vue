@@ -62,8 +62,8 @@
             :key="transaction.transactionId"
           >
             <td>{{ transaction.transactionId.substring(0, 5) }}...</td>
-            <td>{{ transaction.doctor.profile.fullName }}</td>
-            <td>{{ transaction.patient.profile.fullName }}</td>
+            <td>{{ transaction.doctor.doctorNavigation.fullName }}</td>
+            <td>{{ transaction.patient.patientNavigation.fullName }}</td>
             <td>{{ transaction.location.substring(0, 35) }}...</td>
             <td>{{ transaction.dateStart.substring(0, 10) }}</td>
             <td>{{ transaction.dateStart.substring(0, 10) }}</td>
@@ -227,23 +227,30 @@ export default {
     },
 
     async getLocation(location) {
-      let position = location.split(",");
-      let latitude = Number(position[0].split(":")[1]);
-      let longtitude = Number(position[1].split(":")[1]);
-      let url =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-        latitude +
-        "," +
-        longtitude +
-        "&key=AIzaSyDFd7ZNm2BL2JREvk32NZJ0wHzUn2fjw4A";
-      var response = await axios.get(url).catch(function (error) {
-        console.log(error);
-      });
-      if (response.status == 200) {
-        return response.data.results[0].formatted_address;
-      } else {
-        return "";
-      }
+      
+      let data = location.split(";");
+      let temp = data[1];
+      let address = temp.split(":");
+      
+      return address[1].toString();
+
+      // let position = location.split(",");
+      // let latitude = Number(position[0].split(":")[1]);
+      // let longtitude = Number(position[1].split(":")[1]);
+      // let url =
+      //   "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+      //   latitude +
+      //   "," +
+      //   longtitude +
+      //   "&key=AIzaSyDFd7ZNm2BL2JREvk32NZJ0wHzUn2fjw4A";
+      // var response = await axios.get(url).catch(function (error) {
+      //   console.log(error);
+      // });
+      // if (response.status == 200) {
+      //   return response.data.results[0].formatted_address;
+      // } else {
+      //   return "";
+      // }
     },
   },
   watch: {

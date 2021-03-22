@@ -44,14 +44,14 @@
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
             <v-img
-              v-if="temporaryData.dependentData.profile.image != null"
+              v-if="temporaryData.dependentData.patientNavigation.image != null"
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.dependentData.profile.image"
+              :src="temporaryData.dependentData.patientNavigation.image"
             ></v-img>
             <v-img
-              v-if="temporaryData.dependentData.profile.image == null"
+              v-if="temporaryData.dependentData.patientNavigation.image == null"
               contain
               max-height="80%"
               max-width="80%"
@@ -87,13 +87,13 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.dependentData.profile.fullName"
+                v-model="temporaryData.dependentData.patientNavigation.fullName"
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
                 :rules="[
                   (v) =>
-                    (v.length < 50 && v.length > 3) ||
+                    (v.length < 50 && v.length >= 3) ||
                     'Dependent fullname must between 3 - 50 character',
                 ]"
               ></v-text-field>
@@ -108,14 +108,14 @@
                 required
                 :rules="[
                   (v) =>
-                    (v.length < 50 && v.length > 3) ||
-                    'Dependent relationship must between 3 - 50 character',
+                    (v.length < 50 && v.length > 0) ||
+                    'Dependent relationship must between 0 - 50 character',
                 ]"
               ></v-text-field>
 
               <v-radio-group
                 @change="onChange = true"
-                v-model="temporaryData.dependentData.profile.gender"
+                v-model="temporaryData.dependentData.patientNavigation.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -127,7 +127,7 @@
                 ref="dialog"
                 v-model="modal"
                 :return-value.sync="
-                  temporaryData.dependentData.profile.birthday
+                  temporaryData.dependentData.patientNavigation.birthday
                 "
                 persistent
                 width="290px"
@@ -137,7 +137,7 @@
                     @change="onChange = true"
                     class="pt-4"
                     solo
-                    v-model="temporaryData.dependentData.profile.birthday"
+                    v-model="temporaryData.dependentData.patientNavigation.birthday"
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -147,7 +147,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="temporaryData.dependentData.profile.birthday"
+                  v-model="temporaryData.dependentData.patientNavigation.birthday"
                   scrollable
                 >
                   <v-spacer></v-spacer>
@@ -159,7 +159,7 @@
                     color="primary"
                     @click="
                       $refs.dialog.save(
-                        temporaryData.dependentData.profile.birthday
+                        temporaryData.dependentData.patientNavigation.birthday
                       )
                     "
                   >
@@ -172,7 +172,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.dependentData.profile.phone"
+                v-model="temporaryData.dependentData.patientNavigation.phone"
                 label="Phone*"
                 prepend-icon="mdi-phone"
                 required
@@ -182,7 +182,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.dependentData.profile.email"
+                v-model="temporaryData.dependentData.patientNavigation.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -192,7 +192,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.dependentData.profile.idCard"
+                v-model="temporaryData.dependentData.patientNavigation.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -277,6 +277,7 @@ import APIHelper from "../../../helpers/api";
 export default {
   created() {
     this.temporaryData = JSON.parse(JSON.stringify(this.dependent));
+
   },
   props: ["dependent"],
   data() {
@@ -372,23 +373,26 @@ export default {
       if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
-        this.temporaryData.dependentData.profile.image = imgURL;
+        this.temporaryData.dependentData.patientNavigation.image = imgURL;
       }
 
       let profileDetail = {
-        profileId: this.temporaryData.dependentData.profileId,
-        fullname: this.temporaryData.dependentData.profile.fullName,
-        birthday: this.temporaryData.dependentData.profile.birthday,
-        gender: this.temporaryData.dependentData.profile.gender,
-        phone: this.temporaryData.dependentData.profile.phone,
-        image: this.temporaryData.dependentData.profile.image,
-        email: this.temporaryData.dependentData.profile.email,
-        idCard: this.temporaryData.dependentData.profile.idCard,
+        profileId: this.temporaryData.profileID,
+        fullname: this.temporaryData.dependentData.patientNavigation.fullName,
+        birthday: this.temporaryData.dependentData.patientNavigation.birthday,
+        gender: this.temporaryData.dependentData.patientNavigation.gender,
+        phone: this.temporaryData.dependentData.patientNavigation.phone,
+        image: this.temporaryData.dependentData.patientNavigation.image,
+        email: this.temporaryData.dependentData.patientNavigation.email,
+        idCard: this.temporaryData.dependentData.patientNavigation.idCard,
+        accountId: this.temporaryData.dependentData.patientNavigation.accountId,
       };
+
+      console.log("profile detailllllllllllllllllllllll")
       console.log(profileDetail);
 
       let profilePatient = {
-        patientId: this.temporaryData.dependentData.patientId,
+        patientId: this.temporaryData.patientID,
         height:
           this.temporaryData.dependentData.height == null ||
           this.temporaryData.dependentData.height == ""
@@ -400,12 +404,12 @@ export default {
             ? 0
             : this.temporaryData.dependentData.weight,
         bloodType: this.temporaryData.dependentData.bloodType,
-        profileId: this.temporaryData.dependentData.profileId,
-        relationship: this.temporaryData.dependentRelationShip,
-        accountId: this.temporaryData.dependentData.accountId,
-        recordId: this.temporaryData.dependentData.recordId,
-      };
 
+        relationship: this.temporaryData.dependentRelationShip,
+    
+      };
+          console.log("PATIENT DEITAL");
+      console.log(profilePatient);
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Patients", profilePatient)
         .catch(function (error) {

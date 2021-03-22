@@ -28,7 +28,7 @@
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.profile.image"
+              :src="temporaryData.doctorNavigation.image"
             ></v-img>
           </v-row>
           <v-row justify="center" v-if="imageData != null">
@@ -50,7 +50,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.profile.users[0].username"
+                v-model="temporaryData.doctorNavigation.account.username"
                 label="Username"
                 prepend-icon="mdi-account-box"
                 required
@@ -62,14 +62,14 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.profile.fullName"
+                v-model="temporaryData.doctorNavigation.fullName"
                 prepend-icon="mdi-account"
                 label="Name"
               ></v-text-field>
               <v-radio-group
                 readonly
                 @change="onChange = true"
-                v-model="temporaryData.profile.gender"
+                v-model="temporaryData.doctorNavigation.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -83,7 +83,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.profile.birthday"
+                v-model="temporaryData.doctorNavigation.birthday"
                 label="Birthday"
                 prepend-icon="mdi-calendar"
                 hint="MM/DD/YYYY format"
@@ -95,7 +95,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.profile.phone"
+                v-model="temporaryData.doctorNavigation.phone"
                 label="Phone"
                 prepend-icon="mdi-phone"
                 required
@@ -106,7 +106,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.profile.email"
+                v-model="temporaryData.doctorNavigation.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -118,7 +118,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.profile.idCard"
+                v-model="temporaryData.doctorNavigation.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -273,11 +273,11 @@ export default {
 
       let data = {
         disabled: true,
-        accountId: this.doctor.profile.users[0].accountId,
-        roleId: this.doctor.profile.users[0].roleId,
-        profileId: this.doctor.profile.users[0].profileId,
+        accountId: this.doctor.doctorNavigation.account.accountId,
+        roleId: this.doctor.doctorNavigation.account.roleId,
+        profileId: this.doctor.doctorNavigation.profileId,
         waiting: false,
-        username: this.doctor.profile.users[0].username,
+        username: this.doctor.doctorNavigation.account.username,
       };
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Users", data)
@@ -301,11 +301,11 @@ export default {
 
       let data = {
         disabled: false,
-        accountId: this.doctor.profile.users[0].accountId,
-        roleId: this.doctor.profile.users[0].roleId,
-        profileId: this.doctor.profile.users[0].profileId,
+        accountId: this.doctor.doctorNavigation.account.accountId,
+        roleId: this.doctor.doctorNavigation.account.roleId,
+        profileId: this.doctor.doctorNavigation.profileId,
         waiting: false,
-        username: this.doctor.profile.users[0].username,
+        username: this.doctor.doctorNavigation.account.username,
       };
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Users", data)
@@ -322,7 +322,7 @@ export default {
     },
     async fetchSpecialities() {
       var response = await axios
-        .get(APIHelper.getAPIDefault() + "Specialty")
+        .get(APIHelper.getAPIDefault() + "Specialties")
         .catch(function (error) {
           console.log(error);
         });

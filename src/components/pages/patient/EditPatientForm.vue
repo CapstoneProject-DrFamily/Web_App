@@ -44,14 +44,14 @@
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
             <v-img
-              v-if="temporaryData.profile.image != null"
+              v-if="temporaryData.patientNavigation.image != null"
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.profile.image"
+              :src="temporaryData.patientNavigation.image"
             ></v-img>
             <v-img
-              v-if="temporaryData.profile.image == null"
+              v-if="temporaryData.patientNavigation.image == null"
               contain
               max-height="80%"
               max-width="80%"
@@ -86,7 +86,7 @@
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="temporaryData.profile.users[0].username"
+                v-model="temporaryData.patientNavigation.account.username"
                 readonly
                 label="Username (Your phone number)*"
                 prepend-icon="mdi-account-box"
@@ -98,7 +98,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.fullName"
+                v-model="temporaryData.patientNavigation.fullName"
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
@@ -110,7 +110,7 @@
               ></v-text-field>
               <v-radio-group
                 @change="onChange = true"
-                v-model="temporaryData.profile.gender"
+                v-model="temporaryData.patientNavigation.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -121,7 +121,7 @@
               <v-dialog
                 ref="dialog"
                 v-model="modal"
-                :return-value.sync="temporaryData.profile.birthday"
+                :return-value.sync="temporaryData.patientNavigation.birthday"
                 persistent
                 width="290px"
               >
@@ -130,7 +130,7 @@
                     @change="onChange = true"
                     class="pt-4"
                     solo
-                    v-model="temporaryData.profile.birthday"
+                    v-model="temporaryData.patientNavigation.birthday"
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -140,7 +140,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="temporaryData.profile.birthday"
+                  v-model="temporaryData.patientNavigation.birthday"
                   scrollable
                 >
                   <v-spacer></v-spacer>
@@ -150,7 +150,7 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.dialog.save(temporaryData.profile.birthday)"
+                    @click="$refs.dialog.save(temporaryData.patientNavigation.birthday)"
                   >
                     OK
                   </v-btn>
@@ -161,7 +161,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.phone"
+                v-model="temporaryData.patientNavigation.phone"
                 label="Phone*"
                 prepend-icon="mdi-phone"
                 required
@@ -171,7 +171,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.email"
+                v-model="temporaryData.patientNavigation.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -181,7 +181,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.profile.idCard"
+                v-model="temporaryData.patientNavigation.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -365,14 +365,14 @@ export default {
 
     async fetchDependent() {
       this.dependents = [];
-      let id = this.temporaryData.profile.users[0].accountId;
+      let id = this.temporaryData.patientNavigation.account.accountId;
       let response = await axios
         .get(APIHelper.getAPIDefault() + "Patients/" + id + "/Dependents")
         .catch(function (error) {
           console.log(error);
         });
       for (let i = 0; i < response.data.length; i++) {
-        if (response.data[i].dependentRelationShip != "owner") {
+        if (response.data[i].dependentRelationShip.toLowerCase() != "owner") {
           let name = "dialog" + response.data[i].patientID;
           let dltDialog = { name: name, isShow: false };
           response.data[i].dltDialog = dltDialog;
@@ -387,7 +387,7 @@ export default {
               console.log(error);
             });
 
-          dependent.data.profile.birthday = dependent.data.profile.birthday.substring(
+          dependent.data.patientNavigation.birthday = dependent.data.patientNavigation.birthday.substring(
             0,
             10
           );
@@ -435,18 +435,18 @@ export default {
       if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
-        this.temporaryData.profile.image = imgURL;
+        this.temporaryData.patientNavigation.image = imgURL;
       }
 
       let profileDetail = {
-        profileId: this.temporaryData.profileId,
-        fullname: this.temporaryData.profile.fullName,
-        birthday: this.temporaryData.profile.birthday,
-        gender: this.temporaryData.profile.gender,
-        phone: this.temporaryData.profile.phone,
-        image: this.temporaryData.profile.image,
-        email: this.temporaryData.profile.email,
-        idCard: this.temporaryData.profile.idCard,
+        profileId: this.temporaryData.patientNavigation.profileId,
+        fullname: this.temporaryData.patientNavigation.fullName,
+        birthday: this.temporaryData.patientNavigation.birthday,
+        gender: this.temporaryData.patientNavigation.gender,
+        phone: this.temporaryData.patientNavigation.phone,
+        image: this.temporaryData.patientNavigation.image,
+        email: this.temporaryData.patientNavigation.email,
+        idCard: this.temporaryData.patientNavigation.idCard,
       };
       console.log(profileDetail);
 

@@ -37,6 +37,19 @@
                 required
                 :rules="[(v) => !!v || 'Please enter service name']"
               ></v-text-field>
+
+                      <v-select
+                @change="onChange = true"
+                prepend-icon="mdi-needle"
+                :items="specialities"
+                item-text="name"
+                item-value="specialtyId"
+                v-model="createData.specialtyId"
+                label="Speciality"
+                solo
+              ></v-select>
+
+
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"
@@ -51,7 +64,7 @@
               <v-textarea
                 @change="onChange = true"
                 class="pt-4"
-                v-model="createData.description"
+                v-model="createData.serviceDescription"
                 label="Service Description"
                 solo
                 prepend-icon="mdi-book-open-variant"
@@ -100,6 +113,9 @@ import axios from "axios";
 import APIHelper from "../../../helpers/api";
 
 export default {
+    created() {
+    this.fetchSpecialities();
+  },
   data() {
     return {
       valid: false,
@@ -108,15 +124,30 @@ export default {
         serviceName: null,
         servicePrice: null,
         serviceDescription: null,
+        specialtyId: null,
       },
 
       modal: false,
 
       show: false,
       loading: false,
+      specialities: []
     };
   },
   methods: {
+    async fetchSpecialities() {
+      var response = await axios
+        .get(APIHelper.getAPIDefault() + "Specialties")
+        .catch(function (error) {
+          console.log(error);
+        });
+      if (response.status == 200) {
+        for (let i = 0; i < response.data.length; i++) {
+          // console.log(response.data[i]);
+          this.specialities.push(response.data[i]);
+        }
+      }
+    },
     cancel() {
       this.resetForm();
       this.show = false;

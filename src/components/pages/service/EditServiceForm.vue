@@ -15,7 +15,7 @@
         height="200px"
       ></v-img>
       <v-card>
-          <v-row>
+        <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
               Update Service
@@ -24,7 +24,45 @@
         </v-row>
 
         <v-card-text>
-         <v-container>
+          <v-row justify="center" v-if="imageData == null">
+            <v-img
+              v-if="temporaryData.image != null"
+              contain
+              max-height="80%"
+              max-width="80%"
+              :src="temporaryData.image"
+            ></v-img>
+
+            <v-img
+              v-if="temporaryData.image == null"
+              contain
+              max-height="80%"
+              max-width="80%"
+              src="https://www.thermaxglobal.com/wp-content/uploads/2020/05/image-not-found.jpg"
+            ></v-img>
+          </v-row>
+          <v-row justify="center" v-if="imageData != null">
+            <v-img
+              contain
+              max-height="80%"
+              max-width="80%"
+              :src="imagePreview"
+            ></v-img>
+          </v-row>
+          <v-file-input
+            @change="onChange = true"
+            class="pt-10"
+            v-model="imageData"
+            label="Select your image"
+            solo
+            outlined
+            dense
+            accept="image/png, image/jpeg, image/bmp, image/jpg"
+          ></v-file-input>
+        </v-card-text>
+
+        <v-card-text>
+          <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Service</div>
               <v-text-field
@@ -37,7 +75,7 @@
                 required
                 :rules="[(v) => !!v || 'Please enter service name']"
               ></v-text-field>
-        
+
               <v-select
                 @change="onChange = true"
                 prepend-icon="mdi-needle"
@@ -47,7 +85,7 @@
                 v-model="temporaryData.specialtyId"
                 label="Speciality*"
                 solo
-               readonly
+                readonly
               ></v-select>
 
               <v-text-field
@@ -111,6 +149,8 @@
 <script>
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
+import CommonHelper from "../../../helpers/common";
+import defaultImage from "../../../assets/placeholder-img.jpg";
 
 export default {
   created() {
@@ -121,6 +161,8 @@ export default {
   props: ["service"],
   data() {
     return {
+      imageData: null,
+      imagePreview: defaultImage,
       valid: false,
       temporaryData: [],
       onChange: false,
@@ -131,7 +173,7 @@ export default {
     };
   },
   methods: {
- async fetchSpecialities() {
+    async fetchSpecialities() {
       var response = await axios
         .get(APIHelper.getAPIDefault() + "Specialties")
         .catch(function (error) {
@@ -146,6 +188,8 @@ export default {
     },
 
     resetForm() {
+            this.imageData = null;
+      this.imagePreview = defaultImage;
       this.onChange = false;
       this.temporaryData = JSON.parse(JSON.stringify(this.service));
     },
@@ -174,25 +218,46 @@ export default {
       if (!this.valid) {
         return;
       }
-    
+
       this.loading = true;
+      if (this.imageData != null) {
+        var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
+        console.log(imgURL);
+        this.temporaryData.image = imgURL;
+      }
 
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Services", this.temporaryData)
         .catch(function (error) {
           console.log(error);
         });
-            console.log(response);
+      console.log(response);
       if (response.status == 200) {
         isUpdated = true;
       }
-      
+
       this.resetForm();
       this.show = false;
       this.$emit("updated", isUpdated);
       this.loading = false;
 
       // await new Promise((resolve) => setTimeout(resolve, 500));
+    },
+  },
+   watch: {
+    imageData: function () {
+      // preview image before upload
+      if (this.imageData != null) {
+        var reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        // Start the reader job - read file as a data url (base64 format)
+        reader.readAsDataURL(this.imageData);
+      } else {
+        this.imageData = null;
+        this.imagePreview = defaultImage;
+      }
     },
   },
 };

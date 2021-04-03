@@ -66,6 +66,13 @@
         <v-list-item-title>Manage Medicine</v-list-item-title>
       </v-list-item>
 
+       <v-list-item link to="/admin/prescription">
+        <v-list-item-icon>
+          <v-icon>mdi-form-select</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Prescription Template</v-list-item-title>
+      </v-list-item>
+
             <v-list-item link to="/admin/symptom">
         <v-list-item-icon>
           <v-icon>mdi-account-search</v-icon>
@@ -86,6 +93,15 @@
         </v-list-item-icon>
         <v-list-item-title>List Transaction</v-list-item-title>
       </v-list-item>
+
+        <v-list-item link to="/admin/configuration">
+        <v-list-item-icon>
+          <v-icon>mdi-cog-outline</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Configuration</v-list-item-title>
+      </v-list-item>
+
+        
     </v-list>
   </v-navigation-drawer>
 </template>

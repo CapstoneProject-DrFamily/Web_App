@@ -16,13 +16,35 @@
         height="200px"
       ></v-img>
       <v-card>
-           <v-row>
+        <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
               Create Service
             </p>
           </v-col>
         </v-row>
+
+        <v-card-text>
+          <v-row justify="center">
+            <v-img
+              contain
+              max-height="80%"
+              max-width="80%"
+              :src="imagePreview"
+            ></v-img>
+          </v-row>
+          <v-file-input
+            @change="onChange = true"
+            class="pt-10"
+            v-model="imageData"
+            label="Select your image"
+            solo
+            outlined
+            dense
+            accept="image/png, image/jpeg, image/bmp, image/jpg"
+          ></v-file-input>
+        </v-card-text>
+
         <v-card-text>
           <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
@@ -38,7 +60,7 @@
                 :rules="[(v) => !!v || 'Please enter service name']"
               ></v-text-field>
 
-                      <v-select
+              <v-select
                 @change="onChange = true"
                 prepend-icon="mdi-needle"
                 :items="specialities"
@@ -48,7 +70,6 @@
                 label="Speciality"
                 solo
               ></v-select>
-
 
               <v-text-field
                 @change="onChange = true"
@@ -111,9 +132,11 @@
 <script>
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
+import defaultImage from "../../../assets/placeholder-img.jpg";
+import CommonHelper from "../../../helpers/common";
 
 export default {
-    created() {
+  created() {
     this.fetchSpecialities();
   },
   data() {
@@ -125,13 +148,16 @@ export default {
         servicePrice: null,
         serviceDescription: null,
         specialtyId: null,
+        image: null,
       },
 
       modal: false,
 
+      imageData: null,
+      imagePreview: defaultImage,
       show: false,
       loading: false,
-      specialities: []
+      specialities: [],
     };
   },
   methods: {
@@ -165,12 +191,16 @@ export default {
       var isCreated = false;
 
       this.loading = true;
+      var imgURL = null;
+      if (this.imageData != null) {
+        imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
+        console.log(imgURL);
+      }
+
+      this.createData = imgURL;
 
       var response = await axios
-        .post(
-          APIHelper.getAPIDefault() + "Services",
-          this.createData
-        )
+        .post(APIHelper.getAPIDefault() + "Services", this.createData)
         .catch(function (error) {
           console.log(error);
         });
@@ -191,6 +221,20 @@ export default {
       }
     },
   },
+      imageData: function () {
+      // preview image before upload
+      if (this.imageData != null) {
+        var reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        // Start the reader job - read file as a data url (base64 format)
+        reader.readAsDataURL(this.imageData);
+      } else {
+        this.imageData = null;
+        this.imagePreview = defaultImage;
+      }
+    },
 };
 </script>
 

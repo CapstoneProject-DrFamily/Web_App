@@ -56,6 +56,14 @@ export const router = new Router({
           path: "transaction",
           component: () => import("../components/pages/transaction/TransactionPage"),
         },
+        {
+          path: "prescription",
+          component: () => import("../components/pages/prescription/PrescriptionPage"),
+        },
+        {
+          path: "configuration",
+          component: () => import("../components/pages/configuration/ConfigurationPage"),
+        },
       ],
     },
 

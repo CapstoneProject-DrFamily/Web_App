@@ -47,6 +47,7 @@
       <template v-slot:default>
         <thead>
           <tr>
+            <th class="text-left">Image</th>
             <th class="text-left">Service name</th>
             <th class="text-left">Price</th>
             <th class="text-left">Description</th>
@@ -57,6 +58,16 @@
 
         <tbody>
           <tr v-for="service in services" :key="service.serviceId">
+            <td class="pt-6 pb-6" v-if="service.image != null">
+              <v-img :src="service.image" width="100" height="100"></v-img>
+            </td>
+            <td class="pt-6 pb-6" v-if="service.image == null">
+              <v-img
+                src="https://www.thermaxglobal.com/wp-content/uploads/2020/05/image-not-found.jpg"
+                width="100"
+                height="100"
+              ></v-img>
+            </td>
             <td>{{ service.serviceName }}</td>
             <td>{{ service.servicePrice }}</td>
             <td>{{ service.serviceDescription }}</td>
@@ -151,7 +162,6 @@ import APIHelper from "../../../helpers/api";
 import CreateServiceForm from "./CreateServiceForm.vue";
 import EditServiceForm from "./EditServiceForm.vue";
 
-
 export default {
   mounted() {
     this.fetchService(this.page, this.pageSize, this.searchValue);
@@ -199,7 +209,7 @@ export default {
             page +
             "&PageSize=" +
             pageSize
-          : APIHelper.getAPIDefault()+
+          : APIHelper.getAPIDefault() +
             "Services/paging?PageIndex=" +
             page +
             "&PageSize=" +
@@ -212,7 +222,6 @@ export default {
       });
 
       if (response.status == 200) {
-         
         this.totalPage = response.data.totalPages;
         for (let i = 0; i < response.data.services.length; i++) {
           if (!response.data.services[i].disable) {

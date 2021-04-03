@@ -15,7 +15,7 @@
         height="200px"
       ></v-img>
       <v-card>
-          <v-row>
+        <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
               Transaction Detail
@@ -97,7 +97,7 @@
                 prepend-icon="mdi-license"
               ></v-text-field>
 
-       <div class="font-weight-bold customHeader pt-5 pb-5">
+              <div class="font-weight-bold customHeader pt-5 pb-5">
                 Patient Information
               </div>
               <v-text-field
@@ -117,7 +117,7 @@
                 </v-col>
                 <v-col>
                   <v-chip
-                  color="primary"
+                    color="primary"
                     class="ml-1 mr-1"
                     v-for="symptom in transaction.symptomDetails"
                     :key="symptom.symptomId"
@@ -126,7 +126,7 @@
                 </v-col>
               </v-row>
 
-                <div class="font-weight-bold customHeader pt-10 pb-5">
+              <div class="font-weight-bold customHeader pt-10 pb-5">
                 Service Information
               </div>
               <v-text-field
@@ -162,6 +162,36 @@
                 prepend-icon="mdi-account-details"
                 required
               ></v-textarea>
+
+              <v-row class="pb-10">
+                <v-col>
+                  Status
+                  <v-chip
+                    class="ml-3"
+                    color="yellow"
+                    v-if="transaction.status == 1"
+                    >On going</v-chip
+                  >
+                  <v-chip
+                    class="ml-3"
+                    color="orange"
+                    v-if="transaction.status == 2"
+                    >Checking</v-chip
+                  >
+                  <v-chip
+                    class="ml-3"
+                    color="primary"
+                    v-if="transaction.status == 3"
+                    >Done</v-chip
+                  >
+                  <v-chip
+                    class="ml-3"
+                    color="error"
+                    v-if="transaction.status == 4"
+                    >Cancel</v-chip
+                  >
+                </v-col>
+              </v-row>
 
               <v-row justify="center">
                 <v-btn

@@ -85,7 +85,7 @@
                 v-model="temporaryData.specialtyId"
                 label="Speciality*"
                 solo
-                readonly
+             
               ></v-select>
 
               <v-text-field
@@ -225,16 +225,33 @@ export default {
         console.log(imgURL);
         this.temporaryData.image = imgURL;
       }
+        console.log(this.temporaryData);
 
-      var response = await axios
-        .put(APIHelper.getAPIDefault() + "Services", this.temporaryData)
+             var data = await axios
+        .delete(APIHelper.getAPIDefault() + "Services/" + this.temporaryData.serviceId)
         .catch(function (error) {
           console.log(error);
         });
-      console.log(response);
-      if (response.status == 200) {
+
+
+            var response = await axios
+        .post(APIHelper.getAPIDefault() + "Services", this.temporaryData)
+        .catch(function (error) {
+          console.log(error);
+        });
+      if (response.status == 201 && data.status == 204) {
         isUpdated = true;
       }
+
+      // var response = await axios
+      //   .put(APIHelper.getAPIDefault() + "Services", this.temporaryData)
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
+      // console.log(response);
+      // if (response.status == 200) {
+      //   isUpdated = true;
+      // }
 
       this.resetForm();
       this.show = false;

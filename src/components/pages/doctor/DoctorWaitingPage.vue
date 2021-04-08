@@ -195,6 +195,8 @@ export default {
         username: doctor.doctorNavigation.account.username,
       };
 
+      console.log(data);
+
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Users", data)
         .catch(function (error) {

@@ -49,7 +49,7 @@
         >
       </v-row>
 
-    <v-row class="pl-3">
+      <!-- <v-row class="pl-3">
         <v-col cols="1">Km distance</v-col>
         <v-col cols="10">
           <v-slider
@@ -62,6 +62,22 @@
             :tick-labels="labelsDistance"
           >
           </v-slider>
+        </v-col>
+      </v-row> -->
+
+      <v-row class="pl-3">
+        <v-col cols="1">Km distance</v-col>
+        <v-col cols="10">
+          <v-combobox
+            v-model="select"
+            :items="items"
+            label="Select distance in patient application"
+            multiple
+            chips
+            filled
+            rounded
+            dense
+          ></v-combobox>
         </v-col>
       </v-row>
 
@@ -208,6 +224,9 @@ export default {
   },
   data() {
     return {
+      select: [],
+      items: [2, 4, 5, 8, 10, 12, 15, 18, 20],
+
       value: 30,
       min: 30,
       max: 300,
@@ -217,7 +236,7 @@ export default {
       maxDistance: 15,
       stepDistance: 5,
       labels: [],
-       labelsDistance: ["5km", "10km", "15km"],
+      labelsDistance: ["5km", "10km", "15km"],
       doctorConfig: null,
       patientConfig: null,
       message: "",
@@ -235,6 +254,12 @@ export default {
     async saveConfiguration() {
       let isSave = false;
       this.$isLoading(true);
+      if(this.select.length == 0) {
+        
+     this.setSnackbar("Failed. Please select km distance", "error");
+           this.$isLoading(false);
+        return;
+      }
 
       this.doctorConfig.timeout = this.value;
 
@@ -248,6 +273,8 @@ export default {
         });
 
       this.patientConfig.relationShips = this.relationships;
+
+      this.patientConfig.distances = this.select;
 
       var patientApp = await axios
         .put(
@@ -265,15 +292,9 @@ export default {
       this.$isLoading(false);
 
       if (isSave) {
-        this.setSnackbar(
-          "Save success",
-          "success"
-        );
+        this.setSnackbar("Save success", "success");
       } else {
-        this.setSnackbar(
-          "Failed. Please try again",
-          "error"
-        );
+        this.setSnackbar("Failed. Please try again", "error");
       }
     },
 
@@ -286,6 +307,7 @@ export default {
         });
       if (patientApp.status == 200) {
         this.patientConfig = patientApp.data;
+        this.select = patientApp.data.distances;
         for (let i = 0; i < patientApp.data.relationShips.length; i++) {
           this.relationships.push(patientApp.data.relationShips[i]);
         }
@@ -300,6 +322,7 @@ export default {
       if (doctorApp.status == 200) {
         this.doctorConfig = doctorApp.data;
         this.value = doctorApp.data.timeout;
+        
       }
 
       this.$isLoading(false);

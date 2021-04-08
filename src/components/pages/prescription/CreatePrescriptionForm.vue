@@ -19,7 +19,7 @@
 
     <v-dialog width="700" v-model="dialogTemplate">
       <template v-slot:activator="{ on, attrs }">
-        <v-row justify="end" class="mr-4 mb-4">
+        <v-row justify="end" class="mr-4 mb-4 pt-3">
           <div class="my-2">
             <v-btn color="primary" v-bind="attrs" v-on="on">
               <v-icon>mdi-plus</v-icon>
@@ -466,11 +466,14 @@ export default {
         return;
       }
 
+      this.templateName = this.disease.diseaseCode+"-" + this.templateName;
+
       for (let i = 0; i < this.templates.length; i++) {
         if (
           this.templates[i].name.toLowerCase().trim() ==
           this.templateName.toLowerCase().trim()
         ) {
+          this.templateName = null,
           this.setSnackbar("Add failed. Please choose another name", "error");
           return;
         }
@@ -497,6 +500,8 @@ export default {
         data.prescriptionDetails.push(detail);
       }
 
+      data.description = this.disease.diseaseName;
+
       this.doctorConfig.prescriptionTemplates[this.templateName] = data;
       console.log(this.doctorConfig);
 
@@ -514,7 +519,9 @@ export default {
       if (doctorApp.status == 200) {
         isCreated = true;
       }
-   
+        this.templateName = null,
+        this.disease = null,
+
         this.$isLoading(false);
                   this.dialog = false;
       this.dialogTemplate = false;

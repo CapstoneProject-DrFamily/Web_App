@@ -15,13 +15,50 @@
         height="200px"
       ></v-img>
       <v-card>
-           <v-row>
+        <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-              Update Symptom
+              Update Specialty
             </p>
           </v-col>
         </v-row>
+
+        <v-card-text>
+          <v-row justify="center" v-if="imageData == null">
+            <v-img
+              v-if="temporaryData.image != null"
+              contain
+              max-height="80%"
+              max-width="80%"
+              :src="temporaryData.image"
+            ></v-img>
+            <v-img
+              v-if="temporaryData.image == null"
+              contain
+              max-height="80%"
+              max-width="80%"
+              src="https://www.thermaxglobal.com/wp-content/uploads/2020/05/image-not-found.jpg"
+            ></v-img>
+          </v-row>
+          <v-row justify="center" v-if="imageData != null">
+            <v-img
+              contain
+              max-height="80%"
+              max-width="80%"
+              :src="imagePreview"
+            ></v-img>
+          </v-row>
+          <v-file-input
+            @change="onChange = true"
+            class="pt-10"
+            v-model="imageData"
+            label="Select your image"
+            solo
+            outlined
+            dense
+            accept="image/png, image/jpeg, image/bmp, image/jpg"
+          ></v-file-input>
+        </v-card-text>
 
         <v-card-text>
           <v-container>
@@ -35,19 +72,11 @@
                 label="Name"
                 prepend-icon="mdi-ab-testing"
                 required
-                :rules="[(v) => !!v || 'Please enter symptom name']"
+                :rules="[(v) => !!v || 'Please enter speciality name']"
+                readonly
               ></v-text-field>
-              <v-text-field
-                @change="onChange = true"
-                class="pt-6"
-                solo
-                v-model="temporaryData.type"
-                label="Type"
-                prepend-icon="mdi-format-list-bulleted-type"
-                required
-                :rules="[(v) => !!v || 'Please enter symptom type']"
-              ></v-text-field>
-                      <v-textarea
+
+              <v-textarea
                 @change="onChange = true"
                 class="pt-4"
                 v-model="temporaryData.description"
@@ -55,7 +84,7 @@
                 solo
                 prepend-icon="mdi-book-open-variant"
                 required
-                :rules="[(v) => !!v || 'Please enter symptom description']"
+                :rules="[(v) => !!v || 'Please enter speciality description']"
               ></v-textarea>
 
               <v-row justify="center" class="pt-3">
@@ -97,6 +126,8 @@
 <script>
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
+import defaultImage from "../../../assets/placeholder-img.jpg";
+import CommonHelper from "../../../helpers/common";
 
 export default {
   created() {
@@ -111,6 +142,8 @@ export default {
       modal: false,
       show: false,
       loading: false,
+      imageData: null,
+      imagePreview: defaultImage,
     };
   },
   methods: {
@@ -146,8 +179,15 @@ export default {
 
       this.loading = true;
 
+
+       if (this.imageData != null) {
+        var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
+        console.log(imgURL);
+        this.temporaryData.image = imgURL;
+      }
+
       var response = await axios
-        .put(APIHelper.getAPIDefault() + "Symptoms", this.temporaryData)
+        .put(APIHelper.getAPIDefault() + "Specialties", this.temporaryData)
         .catch(function (error) {
           console.log(error);
         });
@@ -155,7 +195,7 @@ export default {
       if (response.status == 200) {
         isUpdated = true;
       }
-      
+
       this.resetForm();
       this.show = false;
       this.$emit("updated", isUpdated);
@@ -163,7 +203,22 @@ export default {
 
       // await new Promise((resolve) => setTimeout(resolve, 500));
     },
+    
   },
+      imageData: function () {
+      // preview image before upload
+      if (this.imageData != null) {
+        var reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        // Start the reader job - read file as a data url (base64 format)
+        reader.readAsDataURL(this.imageData);
+      } else {
+        this.imageData = null;
+        this.imagePreview = defaultImage;
+      }
+    },
 };
 </script>
 

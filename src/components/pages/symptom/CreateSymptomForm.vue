@@ -6,7 +6,7 @@
           <div class="my-2">
             <v-btn color="primary" v-bind="attrs" v-on="on">
               <v-icon>mdi-plus</v-icon>
-              Add Symptom
+              Add Speciality
             </v-btn>
           </div>
         </v-row>
@@ -19,14 +19,34 @@
           <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-              Create Symptom
+              Create Specialty
             </p>
           </v-col>
         </v-row>
+           <v-card-text>
+          <v-row justify="center">
+            <v-img
+              contain
+              max-height="80%"
+              max-width="80%"
+              :src="imagePreview"
+            ></v-img>
+          </v-row>
+          <v-file-input
+            class="pt-10"
+            v-model="imageData"
+            label="Select your image"
+            solo
+            outlined
+            dense
+            accept="image/png, image/jpeg, image/bmp, image/jpg"
+          ></v-file-input>
+        </v-card-text>
+
         <v-card-text>
           <v-container>
                          <v-form @submit.prevent ref="form" v-model="valid">
-              <div class="font-weight-bold customHeader">Symptom</div>
+              <div class="font-weight-bold customHeader">Specialty</div>
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"
@@ -35,9 +55,9 @@
                 label="Name"
                 prepend-icon="mdi-ab-testing"
                 required
-                :rules="[(v) => !!v || 'Please enter symptom name']"
+                :rules="[(v) => !!v || 'Please enter specialty name']"
               ></v-text-field>
-              <v-text-field
+              <!-- <v-text-field
                 @change="onChange = true"
                 class="pt-6"
                 solo
@@ -46,7 +66,7 @@
                 prepend-icon="mdi-format-list-bulleted-type"
                 required
                 :rules="[(v) => !!v || 'Please enter symptom type']"
-              ></v-text-field>
+              ></v-text-field> -->
                       <v-textarea
                 @change="onChange = true"
                 class="pt-4"
@@ -55,7 +75,7 @@
                 solo
                 prepend-icon="mdi-book-open-variant"
                 required
-                :rules="[(v) => !!v || 'Please enter symptom description']"
+                :rules="[(v) => !!v || 'Please enter specialty description']"
               ></v-textarea>
 
               <v-row justify="center" class="pt-3">
@@ -97,6 +117,8 @@
 <script>
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
+import defaultImage from "../../../assets/placeholder-img.jpg";
+import CommonHelper from "../../../helpers/common";
 
 export default {
   data() {
@@ -107,8 +129,12 @@ export default {
         name: null,
         type: null,
         description: null,
+        image: 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg'
 
       },
+
+          imageData: null,
+      imagePreview: defaultImage,
 
       modal: false,
 
@@ -133,10 +159,20 @@ export default {
       }
       var isCreated = false;
 
+         var imgURL = null;
+         
       this.loading = true;
+      
+      if (this.imageData != null) {
+        imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
+        console.log(imgURL);
+      }
+      this.createData.image = imgURL == null ? this.createData.image : imgURL;
+
+
 
       var response = await axios
-        .post(APIHelper.getAPIDefault() + "Symptoms", this.createData)
+        .post(APIHelper.getAPIDefault() + "Specialties", this.createData)
         .catch(function (error) {
           console.log(error);
         });
@@ -151,9 +187,27 @@ export default {
       this.loading = false;
     },
     resetForm() {
+
       this.$refs.form.resetValidation();
       for(let data in this.createData) {
           this.createData[data] = null;
+      }
+      this.createData.image = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
+    },
+  },
+   watch: {
+    imageData: function () {
+      // preview image before upload
+      if (this.imageData != null) {
+        var reader = new FileReader();
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result;
+        };
+        // Start the reader job - read file as a data url (base64 format)
+        reader.readAsDataURL(this.imageData);
+      } else {
+        this.imageData = null;
+        this.imagePreview = defaultImage;
       }
     },
   },

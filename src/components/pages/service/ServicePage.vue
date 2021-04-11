@@ -69,7 +69,7 @@
               ></v-img>
             </td>
             <td>{{ service.serviceName }}</td>
-            <td>{{ service.servicePrice }}</td>
+            <td>{{ service.servicePrice }} VNĐ</td>
             <td>{{ service.serviceDescription }}</td>
 
             <td>

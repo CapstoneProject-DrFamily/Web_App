@@ -68,7 +68,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.dateStart"
+                v-model="transaction.dateEnd"
                 prepend-icon="mdi-account"
                 label="End"
               >
@@ -146,7 +146,7 @@
                 rounded
                 readonly
                 v-model="transaction.service.servicePrice"
-                label="Service Price"
+                label="Service Price (VNĐ)"
                 prepend-icon="mdi-license"
                 required
               ></v-text-field>

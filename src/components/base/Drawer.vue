@@ -1,17 +1,20 @@
 <template>
-  <v-navigation-drawer app width="260" dark v-model="this.$store.state.drawerOn">
+  <v-navigation-drawer app width="260" dark v-model="this.$store.state.drawerOn"  class="blue darken-1"
+  
+  >
     <!-- v-model="this.$store.state.drawerOn" -->
-    <v-list dense nav>
-      <v-list-item class="pt-4">
-        <v-list-item-avatar class="align-self-center" color="white" contain>
+    <v-list dense nav color="primary">
+      <v-list-item class="pt-3">
+        <v-list-item-avatar class="align-self-center" color="white" contain size="60">
           <v-img
-            src="https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico"
-            max-height="30"
+            src="https://www.crushpixel.com/big-static15/preview4/immune-system-icon-medical-cross-2201109.jpg"
+            max-height="60"
+            max-width="60"
           />
         </v-list-item-avatar>
 
-        <v-list-item-content class="pa">
-          <v-list-item-title class="display" v-text="'Page'" />
+        <v-list-item-content class="pa"> 
+          <v-list-item-title class="display" v-text="'Admin System'" />
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -26,7 +29,7 @@
         <v-list-item-title>Dashboard</v-list-item-title>
       </v-list-item> -->
       
-      <v-list-group prepend-icon="mdi-account-circle" no-action>
+      <v-list-group prepend-icon="mdi-account-circle" no-action color="white">
         <template v-slot:activator >
           <v-list-item-content>
             <v-list-item-title>Manage Doctor</v-list-item-title>
@@ -77,7 +80,7 @@
         <v-list-item-icon>
           <v-icon>mdi-account-search</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Manage Symptom</v-list-item-title>
+        <v-list-item-title>Manage Speciality</v-list-item-title>
       </v-list-item>
 
         <v-list-item link to="/admin/service">

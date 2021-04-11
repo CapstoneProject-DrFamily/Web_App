@@ -47,8 +47,8 @@
       <template v-slot:default>
         <thead>
           <tr>
+            <th class="text-left">Image</th>
             <th class="text-left">Name</th>
-            <th class="text-left">Type</th>
             <th class="text-left">Description</th>
             <th class="text-left"></th>
             <th class="text-left"></th>
@@ -56,9 +56,15 @@
         </thead>
 
         <tbody>
-          <tr v-for="symptom in symptoms" :key="symptom.symptomId">
+          <tr v-for="symptom in symptoms" :key="symptom.specialtyId">
+             <td class="pt-6 pb-6">
+              <v-img
+                :src="symptom.image"
+                width="100"
+                height="100"
+              ></v-img>
+            </td>
             <td>{{ symptom.name }}</td>
-            <td>{{ symptom.type }}</td>
             <td>{{ symptom.description }}</td>
 
             <td>
@@ -82,7 +88,7 @@
 
                   <v-card>
                     <v-card-title class="headline red lighten-1">
-                      Confirm delete this symptom
+                      Confirm delete this Specialty
                     </v-card-title>
 
                     <v-card-text>
@@ -104,7 +110,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteSymptom(symptom.symptomId)"
+                        @click.prevent="deleteSymptom(symptom.specialtyId)"
                       >
                         I accept
                       </v-btn>
@@ -192,12 +198,12 @@ export default {
       url =
         value == null
           ? APIHelper.getAPIDefault() +
-            "Symptoms/paging?PageIndex=" +
+            "Specialties/paging?PageIndex=" +
             page +
             "&PageSize=" +
             pageSize
           : APIHelper.getAPIDefault() +
-            "Symptoms/paging?PageIndex=" +
+            "Specialties/paging?PageIndex=" +
             page +
             "&PageSize=" +
             pageSize +
@@ -210,12 +216,12 @@ export default {
 
       if (response.status == 200) {
         this.totalPage = response.data.totalPages;
-        for (let i = 0; i < response.data.symptoms.length; i++) {
-          if (!response.data.symptoms[i].disable) {
-            let name = "dialog" + response.data.symptoms[i].symptomId;
+        for (let i = 0; i < response.data.specialties.length; i++) {
+          if (!response.data.specialties[i].disable) {
+            let name = "dialog" + response.data.specialties[i].specialtyId;
             let dltDialog = { name: name, isShow: false };
-            response.data.symptoms[i].dltDialog = dltDialog;
-            this.symptoms.push(response.data.symptoms[i]);
+            response.data.specialties[i].dltDialog = dltDialog;
+            this.symptoms.push(response.data.specialties[i]);
             // console.log(response.data.medicines[i]);
           }
         }
@@ -230,9 +236,9 @@ export default {
         } else {
           this.fetchSymptom(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Update Symptom Successful", "success");
+        this.setSnackbar("Update Specialty Successful", "success");
       } else {
-        this.setSnackbar("Update Symptom Failed", "error");
+        this.setSnackbar("Update Specialty Failed", "error");
       }
     },
     addSymptom(isSuccess) {
@@ -242,9 +248,9 @@ export default {
         } else {
           this.fetchSymptom(this.page, this.pageSize, null);
         }
-        this.setSnackbar("Add Medicine Successful", "success");
+        this.setSnackbar("Add Specialty Successful", "success");
       } else {
-        this.setSnackbar("Add Medicine Failed", "error");
+        this.setSnackbar("Add Specialty Failed", "error");
       }
     },
     async deleteSymptom(id) {
@@ -254,7 +260,7 @@ export default {
       // console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Symptoms/" + id)
+        .delete(APIHelper.getAPIDefault() + "Specialties/" + id)
         .catch(function (error) {
           console.log(error);
         });
@@ -263,7 +269,7 @@ export default {
         success = true;
       }
 
-      this.symptoms.find((x) => x.symptomId === id).dltDialog.isShow = false;
+      this.symptoms.find((x) => x.specialtyId === id).dltDialog.isShow = false;
       if (success) {
         if (this.page != 1) {
           this.page = 1;

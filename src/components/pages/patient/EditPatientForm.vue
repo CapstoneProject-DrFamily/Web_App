@@ -303,7 +303,7 @@ export default {
       imagePreview: defaultImage,
       show: false,
       loading: false,
-      bloodType: ["A", "B", "AB", "O"],
+      bloodType: ["A", "B", "AB", "O", "Other"],
     };
   },
   components: {

@@ -49,13 +49,8 @@
             <th class="text-left">Doctor</th>
             <th class="text-left">Patient</th>
             <th class="text-left">Location</th>
-
-            <!-- <th class="text-left">Start</th>
-            <th class="text-left">End</th> -->
-    
             <th class="text-left"></th>
             <th class="text-left"></th>
-               
           </tr>
         </thead>
 
@@ -68,42 +63,45 @@
             <td>{{ transaction.doctor.doctorNavigation.fullName }}</td>
             <td>{{ transaction.patient.patientNavigation.fullName }}</td>
             <td>{{ transaction.location.substring(0, 35) }}...</td>
-            <!-- <td>{{ transaction.dateStart.substring(0, 10) }}</td>
-            <td>{{ transaction.dateEnd.substring(0, 10) }}</td> -->
-
 
             <td>
-              <transaction-detail-page :transaction="transaction" ></transaction-detail-page>
+              <transaction-detail-page
+                :transaction="transaction"
+              ></transaction-detail-page>
             </td>
 
-            
             <td>
- <v-chip
-                    class="ml-3"
-                    color="yellow"
-                    v-if="transaction.status == 1"
-                    >On going</v-chip
-                  >
-                  <v-chip
-                    class="ml-3"
-                    color="orange"
-                    v-if="transaction.status == 2"
-                    >Checking</v-chip
-                  >
-                  <v-chip
-                    class="ml-3"
-                    color="primary"
-                    v-if="transaction.status == 3"
-                    >Done</v-chip
-                  >
-                  <v-chip
-                    class="ml-3"
-                    color="error"
-                    v-if="transaction.status == 4"
-                    >Cancel</v-chip
-                  >
+              <v-chip
+                class="ml-3"
+                color="yellow"
+                text-color="white"
+                v-if="transaction.status == 1"
+                >On going</v-chip
+              >
+              <v-chip
+                class="ml-3"
+                color="orange"
+                text-color="white"
+                v-if="transaction.status == 2"
+                >Checking</v-chip
+              >
+              <v-chip
+                class="ml-3"
+                color="green"
+                text-color="white"
+                v-if="transaction.status == 3"
+                >Done</v-chip
+              >
+              <v-chip class="ml-3" color="error" v-if="transaction.status == 4"
+                >Cancel</v-chip
+              >
 
-
+              <v-chip
+                class="ml-3"
+                color="primary"
+                v-if="transaction.status == 5"
+                >Unpaid</v-chip
+              >
             </td>
           </tr>
           <td class="text-center" colspan="10">
@@ -134,6 +132,8 @@
         </v-container>
       </v-col>
     </v-row>
+
+
   </v-container>
 </template>
 
@@ -150,6 +150,7 @@ export default {
 
   data() {
     return {
+
       type: "success",
       snackbar: false,
       message: ``,
@@ -234,10 +235,9 @@ export default {
             response.data.transactions[i].dateStart = this.formatDay(
               response.data.transactions[i].dateStart
             );
-               response.data.transactions[i].dateEnd = this.formatDay(
+            response.data.transactions[i].dateEnd = this.formatDay(
               response.data.transactions[i].dateEnd
             );
-
 
             this.transactions.push(response.data.transactions[i]);
           }
@@ -266,11 +266,10 @@ export default {
     },
 
     async getLocation(location) {
-      
       let data = location.split(";");
       let temp = data[1];
       let address = temp.split(":");
-      
+
       return address[1].toString();
 
       // let position = location.split(",");

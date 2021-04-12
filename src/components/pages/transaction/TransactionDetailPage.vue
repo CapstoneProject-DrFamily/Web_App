@@ -169,18 +169,21 @@
                   <v-chip
                     class="ml-3"
                     color="yellow"
+                    text-color="white"
                     v-if="transaction.status == 1"
                     >On going</v-chip
                   >
                   <v-chip
                     class="ml-3"
                     color="orange"
+                    text-color="white"
                     v-if="transaction.status == 2"
                     >Checking</v-chip
                   >
                   <v-chip
                     class="ml-3"
-                    color="primary"
+                    color="green"
+                    text-color="white"
                     v-if="transaction.status == 3"
                     >Done</v-chip
                   >
@@ -189,6 +192,12 @@
                     color="error"
                     v-if="transaction.status == 4"
                     >Cancel</v-chip
+                  >
+                   <v-chip
+                    class="ml-3"
+                    color="primary"
+                    v-if="transaction.status == 5"
+                    >Unpaid</v-chip
                   >
                 </v-col>
               </v-row>

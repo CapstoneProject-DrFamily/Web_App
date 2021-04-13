@@ -4,47 +4,63 @@
       <v-container fluid fill-height class="c-app">
         <v-layout align-center justify-center>
           <v-flex xs12 sm8 md4>
-         
-            <v-card class="elevation-12">
-          
-              <v-toolbar dark color="primary">
-                <v-toolbar-title>Login form</v-toolbar-title>
-              </v-toolbar>
+            <v-col>
+              <v-card class="elevation-12">
+                <v-toolbar dark color="primary">
+                  <v-spacer></v-spacer>
+                  <v-toolbar-title >FAMILY DOCTOR SYSTEM</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                </v-toolbar>
+                             <v-img
+    height="250"
+      src="https://image.freepik.com/free-vector/medical-healthcare-system-protection-shield-background-design_1017-24590.jpg"
+    ></v-img>
 
-              <v-row justify="center">
-                <v-col md="8" sm="8" class="pt-10">
-                  <v-alert :value="alert" type="error"
-                    >Login Failed</v-alert
-                  ></v-col
-                >
-              </v-row>
+                <v-row justify="center">
+                  <v-col md="8" sm="8" class="pt-10">
+                    <v-alert :value="alert" type="error" dismissible
+                      >Login Failed</v-alert
+                    ></v-col
+                  >
+                </v-row>
+    
 
-              <v-card-text>
-                <v-form>
-                  <v-text-field
-                    v-model="username"
-                    prepend-icon="mdi-account"
-                    name="login"
-                    label="Login"
-                    type="text"
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="password"
-                    id="password"
-                    prepend-icon="mdi-lock"
-                    name="password"
-                    label="Password"
-                    type="password"
-                  ></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" v-on:click.prevent="login()"
-                  >Login</v-btn
-                >
-              </v-card-actions>
-            </v-card>
+                <v-card-text>
+                  
+
+                  <v-form>
+                    <v-text-field
+                      outlined
+                      v-model="username"
+                      prepend-icon="mdi-account"
+                      name="login"
+                      label="Login"
+                      type="text"
+                    ></v-text-field>
+
+                    <v-text-field
+                      outlined
+                      v-model="password"
+                      id="password"
+                      prepend-icon="mdi-lock"
+                      name="password"
+                      label="Password"
+                      type="password"
+                    ></v-text-field>
+                  </v-form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    class="mb-5 mr-5 pa-5"
+                    color="primary"
+                    v-on:click.prevent="login()"
+                    >Login</v-btn
+                  >
+                     <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card></v-col
+            >
           </v-flex>
         </v-layout>
       </v-container>

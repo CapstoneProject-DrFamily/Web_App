@@ -3,23 +3,23 @@
   
   >
     <!-- v-model="this.$store.state.drawerOn" -->
-    <v-list dense nav color="primary">
-      <v-list-item class="pt-3">
-        <v-list-item-avatar class="align-self-center" color="white" contain size="60">
+    <v-list dense nav color="blue darken-1">
+      <v-list-item class="pt-3 pl-10">
+        <v-list-item-content class="align-self-center" color="white" contain size="150">
           <v-img
-            src="https://www.crushpixel.com/big-static15/preview4/immune-system-icon-medical-cross-2201109.jpg"
-            max-height="60"
-            max-width="60"
+            src="https://firebasestorage.googleapis.com/v0/b/capstoneproject-5c703.appspot.com/o/AdminStorage%2Fimages%2FlogoPatient.png?alt=media&token=36177678-9e40-4100-90ea-d501b80e1b44"
+            max-height="150"
+            max-width="150"
           />
-        </v-list-item-avatar>
-
-        <v-list-item-content class="pa"> 
-          <v-list-item-title class="display" v-text="'Admin System'" />
         </v-list-item-content>
+
+        <!-- <v-list-item-content class="pa"> 
+          <v-list-item-title class="display" v-text="'Admin System'" />
+        </v-list-item-content> -->
       </v-list-item>
     </v-list>
 
-    <v-divider class="mb-1" />
+    <v-divider class="mb-1"  />
 
     <v-list nav dense class="id-drawer">
       <!-- <v-list-item link to="/admin/">

@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar absolute app height="75" color="grey lighten-4" flat>
+  <v-app-bar absolute app height="75" color="blue lighten-5" flat>
     <v-btn class="mr-3" elevation="1" fab small @click="getDrawer">
       <v-icon> mdi-dots-vertical </v-icon>
     </v-btn>
     <v-toolbar-title
       class="hidden-sm-and-down font-weight-light"
-      v-text="'Dashboard'"
+      v-text="''"
     />
     <v-spacer />
 

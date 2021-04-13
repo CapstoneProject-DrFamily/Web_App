@@ -308,7 +308,7 @@ export default {
         username: this.doctor.doctorNavigation.account.username,
       };
       var response = await axios
-        .put(APIHelper.getAPIDefault() + "Users", data)
+        .put(APIHelper.getAPIDefault() + "Users?isAcceptDoctor="+isApproved, data)
         .catch(function (error) {
           console.log(error);
         });

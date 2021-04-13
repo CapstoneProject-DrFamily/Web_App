@@ -67,12 +67,12 @@
 
       <v-row class="pl-3">
         <v-col cols="1">Km distance</v-col>
-        <v-col cols="10">
+        <v-col cols="5">
           <v-combobox
             v-model="select"
             :items="items"
             label="Select distance in patient application"
-            multiple
+            
             chips
             filled
             rounded
@@ -225,7 +225,7 @@ export default {
   data() {
     return {
       select: [],
-      items: [2, 4, 5, 8, 10, 12, 15, 18, 20],
+      items: [2, 4, 5, 8, 10],
 
       value: 30,
       min: 30,
@@ -273,8 +273,12 @@ export default {
         });
 
       this.patientConfig.relationShips = this.relationships;
+      console.log(this.select);
 
-      this.patientConfig.distances = this.select;
+      var list = [];
+      list.push(this.select);
+
+      this.patientConfig.distances = list;
 
       var patientApp = await axios
         .put(

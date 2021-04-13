@@ -198,7 +198,7 @@ export default {
       console.log(data);
 
       var response = await axios
-        .put(APIHelper.getAPIDefault() + "Users", data)
+        .put(APIHelper.getAPIDefault() + "Users?isAcceptDoctor="+isApprove, data)
         .catch(function (error) {
           console.log(error);
         });

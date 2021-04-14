@@ -5,7 +5,7 @@
     </v-btn>
     <v-toolbar-title
       class="hidden-sm-and-down font-weight-light"
-      v-text="''"
+      v-text="getName(this.$route.fullPath)"
     />
     <v-spacer />
 
@@ -31,11 +31,25 @@
 
 <script>
 export default {
+  data() {
+    return {
+      text: null,
+    };
+  },
+
   methods: {
+    getName(name) {
+        let data = name.split("/");
+        console.log(data);
+        let display = data[data.length - 1];
+        display =  display.charAt(0).toUpperCase() + display.slice(1);
+        return display;
+    },
     getDrawer() {
       this.$store.state.drawerOn = !this.$store.state.drawerOn;
       console.log(this.$store.state.drawerOn);
     },
   },
+ 
 };
 </script>

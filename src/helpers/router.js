@@ -45,7 +45,7 @@ export const router = new Router({
           component: () => import("../components/pages/medicine/MedicinePage"),
         },
         {
-          path: "symptom",
+          path: "specialty",
           component: () => import("../components/pages/symptom/SymptomPage"),
         },
         {

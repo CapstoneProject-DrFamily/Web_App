@@ -12,6 +12,46 @@
       >
         {{ message }}
 
+        <v-dialog v-model="dialogReason" width="500">
+          <v-form @submit.prevent ref="form" v-model="valid">
+            <v-card>
+              <v-card-title class="headline red">
+                The reason for denying this doctor
+              </v-card-title>
+
+              <v-card-text>
+                <v-textarea
+                  class="pt-10"
+                  v-model="reasonDeny"
+                  solo
+                  name="input-7-4"
+                  label="Enter your reason here"
+                  :rules="[(v) => !!v || 'Please enter your reason']"
+                ></v-textarea>
+              </v-card-text>
+
+              <v-divider></v-divider>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  v-if="!loadingDenying"
+                  color="error"
+                  text
+                  @click="denyDoctor()"
+                >
+                  Deny this doctor
+                </v-btn>
+                <v-progress-circular
+                  v-if="loadingDenying"
+                  indeterminate
+                  color="primary"
+                ></v-progress-circular>
+              </v-card-actions>
+            </v-card>
+          </v-form>
+        </v-dialog>
+
         <template v-slot:action="{ attrs }">
           <v-btn :color="type" text v-bind="attrs" @click="snackbar = false">
             <v-icon>mdi-close</v-icon>
@@ -136,6 +176,11 @@ export default {
 
   data() {
     return {
+      valid: false,
+      loadingDenying: false,
+      doctorDeny: null,
+      reasonDeny: null,
+      dialogReason: false,
       type: "success",
       snackbar: false,
       message: ``,
@@ -147,13 +192,24 @@ export default {
     };
   },
   methods: {
+    async denyDoctor() {
+         this.$refs.form.validate();
+          if (!this.valid) {
+            return;
+          }
+      this.loadingDenying = true;
+      await this.approveDoctor(this.doctorDeny, false);
+      this.loadingDenying = false;
+      this.dialogReason = false;
+    },
+
     deniedFromDetail(isSuccess) {
-        if(isSuccess) {
-           this.setSnackbar("Action successful", "success");
-           this.fetchDoctor();
+      if (isSuccess) {
+        this.setSnackbar("Action successful", "success");
+        this.fetchDoctor();
       } else {
         this.setSnackbar("Action failed", "error");
-        }
+      }
     },
 
     approveFromDetail(isApproved) {
@@ -168,7 +224,11 @@ export default {
     confirmDeny(doctor) {
       this.$confirm("Do you want to deny this doctor ?").then((res) => {
         if (res) {
-          this.approveDoctor(doctor, false);
+       
+          console.log(doctor);
+          this.dialogReason = true;
+          this.doctorDeny = doctor;
+          // this.approveDoctor(doctor, false);
         } else {
           return;
         }
@@ -186,7 +246,7 @@ export default {
     },
 
     async approveDoctor(doctor, isApprove) {
-      let data = {
+      let userModel = {
         disabled: isApprove == true ? false : true,
         accountId: doctor.doctorNavigation.account.accountId,
         roleId: doctor.doctorNavigation.account.roleId,
@@ -195,10 +255,17 @@ export default {
         username: doctor.doctorNavigation.account.username,
       };
 
-      console.log(data);
+
+
+      let data = {
+        userModel: userModel,
+        isAcceptDoctor: true,
+        reason: this.reasonDeny,
+      };
+            console.log(data);
 
       var response = await axios
-        .put(APIHelper.getAPIDefault() + "Users?isAcceptDoctor="+isApprove, data)
+        .put(APIHelper.getAPIDefault() + "Users", data)
         .catch(function (error) {
           console.log(error);
         });
@@ -246,8 +313,19 @@ export default {
   components: {
     WaitingDoctorInfo,
   },
+  watch: {
+    dialogReason: function () {
+      if (!this.dialogReason) {
+        this.doctorDeny = null;
+        this.reasonDeny = null;
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
+.theme--light.v-card {
+  color: #f5f5f5;
+}
 </style>

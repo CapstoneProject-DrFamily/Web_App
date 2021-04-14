@@ -195,16 +195,16 @@
                   Close
                 </v-btn>
 
-                <v-btn
+                <!-- <v-btn
                   color="error"
                   class="mr-4"
                   v-on:click="confirmDialog(false)"
                   v-if="!loading"
                 >
                   Deny
-                </v-btn>
+                </v-btn> -->
 
-                <v-btn
+                <!-- <v-btn
                   :loading="loading"
                   :disabled="loading"
                   color="success"
@@ -213,7 +213,7 @@
                   v-on:click="confirmDialog(true)"
                 >
                   Approve
-                </v-btn>
+                </v-btn> -->
               </v-row>
             </v-form>
           </v-container>

@@ -76,7 +76,7 @@
         <v-list-item-title>Prescription Template</v-list-item-title>
       </v-list-item>
 
-            <v-list-item link to="/admin/symptom">
+            <v-list-item link to="/admin/specialty">
         <v-list-item-icon>
           <v-icon>mdi-account-search</v-icon>
         </v-list-item-icon>

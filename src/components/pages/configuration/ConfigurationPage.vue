@@ -276,7 +276,13 @@ export default {
       console.log(this.select);
 
       var list = [];
+      if(typeof this.select != 'number') {
+        list.push(this.select[0]);
+      } else {
       list.push(this.select);
+      }
+
+      console.log(this.select);
 
       this.patientConfig.distances = list;
 

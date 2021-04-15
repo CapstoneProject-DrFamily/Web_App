@@ -308,7 +308,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-row>
                 <v-col class="d-flex justify-center pt-10 pb-10">
-                  <v-btn color="success" v-bind="attrs" v-on="on">
+                  <v-btn color="success" v-bind="attrs" v-on="on" @click="validateMedicine">
                     Create
                   </v-btn></v-col
                 >

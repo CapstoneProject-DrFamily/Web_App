@@ -49,7 +49,7 @@ export default {
     async fetchAppConfig() {
       this.$isLoading(true);
       var patientApp = await axios
-        .get("https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/" + 1)
+        .get("https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/" + 1)
         .catch(function (error) {
           console.log(error);
         });
@@ -58,7 +58,7 @@ export default {
       }
 
       var doctorApp = await axios
-        .get("https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/" + 2)
+        .get("https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/" + 2)
         .catch(function (error) {
           console.log(error);
         });
@@ -80,7 +80,7 @@ export default {
 
       var patientApp = await axios
         .put(
-          "https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/PatientApp",
+          "https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/PatientApp",
           this.patientConfig
         )
         .catch(function (error) {
@@ -89,7 +89,7 @@ export default {
 
       var doctorApp = await axios
         .put(
-          "https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/DoctorApp",
+          "https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/DoctorApp",
           this.doctorConfig
         )
         .catch(function (error) {

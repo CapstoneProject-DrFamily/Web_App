@@ -441,7 +441,7 @@ export default {
       let isSave = false;
       var doctorApp = await axios
         .put(
-          "https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/DoctorApp",
+          "https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/DoctorApp",
           this.doctorConfig
         )
         .catch(function (error) {
@@ -495,7 +495,7 @@ export default {
       let isSave = false;
       var doctorApp = await axios
         .put(
-          "https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/DoctorApp",
+          "https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/DoctorApp",
           this.doctorConfig
         )
         .catch(function (error) {
@@ -523,7 +523,7 @@ export default {
 
       var doctorApp = await axios
         .put(
-          "https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/DoctorApp",
+          "https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/DoctorApp",
           this.doctorConfig
         )
         .catch(function (error) {
@@ -557,7 +557,7 @@ export default {
           delete this.doctorConfig["prescriptionTemplates"][templateName];
           var doctorApp = await axios
             .put(
-              "https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/DoctorApp",
+              "https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/DoctorApp",
               this.doctorConfig
             )
             .catch(function (error) {
@@ -597,7 +597,7 @@ export default {
       this.$isLoading(true);
       this.templates = [];
       var doctorApp = await axios
-        .get("https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/" + 2)
+        .get("https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/" + 2)
         .catch(function (error) {
           console.log(error);
         });

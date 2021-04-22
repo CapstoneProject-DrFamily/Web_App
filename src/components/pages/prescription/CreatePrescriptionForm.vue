@@ -507,7 +507,7 @@ export default {
 
       var doctorApp = await axios
         .put(
-          "https://capstoneapi-dev.azurewebsites.net/api/AppConfigs/DoctorApp",
+          "https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/DoctorApp",
           this.doctorConfig
         )
         .catch(function (error) {

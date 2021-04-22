@@ -64,6 +64,10 @@ export const router = new Router({
           path: "configuration",
           component: () => import("../components/pages/configuration/ConfigurationPage"),
         },
+        {
+          path: "policy",
+          component: () => import("../components/pages/policy/PolicyPage"),
+        },
       ],
     },
 

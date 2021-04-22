@@ -25,32 +25,32 @@
           :doctorConfig="doctorConfig"
           @created="createNewTemplate"
         ></create-prescription-form
-      ></v-row>
+      ></v-row> 
 
       <!-- 
      test -->
-      <v-row v-for="(list, key) in Array.from(mapTemplates)" :key="key">
+      <v-row v-for="(list, key) in Array.from(mapTemplates)" :key="key" >
         <v-col cols="10">
-          <v-expansion-panels accordion>
-            <v-expansion-panel>
+          <v-expansion-panels accordion >
+            <v-expansion-panel class="card-expand">
               <v-expansion-panel-header>
-                <h3>{{ list[0] }} {{ list[1][0].data.description }}</h3>
+                <h3 :style="{color : 'white'}">{{ list[0] }} {{ list[1][0].data.description }}</h3>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <v-row>
+                <!-- <v-row>
                   <v-col> List template</v-col>
-                </v-row>
-
+                </v-row> -->
+            
                 <v-row
                   justify="center"
                   v-for="(template, index) in list[1]"
                   :key="template.name"
                 >
-                  <v-col cols="11">
+                  <v-col cols="8">
                     <v-expansion-panels accordion>
                       <v-expansion-panel>
                         <v-expansion-panel-header>
-                          <h4>{{ template.name }}</h4>
+                          <h4 >{{ template.name }}</h4>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                           <v-col>
@@ -257,6 +257,7 @@
                               ]"
                               :key="data.medicine.name"
                             >
+                              <!-- Một hai ba bốn ngày -->
                               <v-col>
                                 <v-row class="pa-3">
                                   <v-col>
@@ -688,3 +689,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .card-expand {
+     background-image: linear-gradient(to right,#1e88e5 , #6DD5FA);
+  }
+</style>

@@ -18,6 +18,7 @@
     "vue": "^2.6.11",
     "vue-axios-cors": "^1.0.1",
     "vue-router": "^3.4.9",
+    "vue2-editor": "^2.10.2",
     "vuejs-loading-screen": "^1.0.9",
     "vuetify": "^2.4.2",
     "vuetify-confirm": "^2.0.6",

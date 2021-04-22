@@ -97,6 +97,14 @@
         <v-list-item-title>List Transaction</v-list-item-title>
       </v-list-item>
 
+     <v-list-item link to="/admin/policy">
+        <v-list-item-icon>
+          <v-icon>mdi-police-badge</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Policy</v-list-item-title>
+      </v-list-item>
+
+
         <v-list-item link to="/admin/configuration">
         <v-list-item-icon>
           <v-icon>mdi-cog-outline</v-icon>

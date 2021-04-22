@@ -8,6 +8,7 @@ import loading from "vuejs-loading-screen";
 import firebase from "firebase";
 import VuetifyConfirm from "vuetify-confirm";
 
+
 Vue.config.productionTip = false;
 
 // firebase
@@ -49,3 +50,4 @@ Vue.use(VuetifyConfirm, {
   title: "Confirm your action",
   width: 350,
 });
+

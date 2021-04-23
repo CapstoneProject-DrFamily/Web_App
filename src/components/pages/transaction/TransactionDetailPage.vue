@@ -49,7 +49,7 @@
                 rounded
                 readonly
                 v-model="transaction.location"
-                prepend-icon="mdi-account"
+                prepend-icon="mdi-map-marker"
                 label="Location"
               ></v-textarea>
 
@@ -59,7 +59,7 @@
                 rounded
                 readonly
                 v-model="transaction.dateStart"
-                prepend-icon="mdi-account"
+                prepend-icon="mdi-calendar"
                 label="Start"
               ></v-text-field>
 
@@ -69,7 +69,7 @@
                 rounded
                 readonly
                 v-model="transaction.dateEnd"
-                prepend-icon="mdi-account"
+                prepend-icon="mdi-calendar"
                 label="End"
               >
               </v-text-field>
@@ -94,7 +94,7 @@
                 readonly
                 v-model="transaction.doctor.doctorNavigation.fullName"
                 label="Doctor"
-                prepend-icon="mdi-license"
+                prepend-icon="mdi-account"
               ></v-text-field>
 
               <div class="font-weight-bold customHeader pt-5 pb-5">
@@ -107,11 +107,11 @@
                 readonly
                 v-model="transaction.patient.patientNavigation.fullName"
                 label="Patient"
-                prepend-icon="mdi-license"
+                prepend-icon="mdi-account"
                 required
               ></v-text-field>
 
-              <v-row>
+              <!-- <v-row>
                 <v-col cols="1">
                   <v-icon>mdi-account-search</v-icon>
                 </v-col>
@@ -124,7 +124,7 @@
                     >{{ symptom.symptom.name }}</v-chip
                   >
                 </v-col>
-              </v-row>
+              </v-row> -->
 
               <div class="font-weight-bold customHeader pt-10 pb-5">
                 Service Information
@@ -147,7 +147,7 @@
                 readonly
                 v-model="transaction.service.servicePrice"
                 label="Service Price (VNĐ)"
-                prepend-icon="mdi-license"
+                prepend-icon="mdi-currency-usd"
                 required
               ></v-text-field>
 

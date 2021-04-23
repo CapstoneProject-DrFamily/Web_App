@@ -49,6 +49,8 @@
             <th class="text-left">Doctor</th>
             <th class="text-left">Patient</th>
             <th class="text-left">Location</th>
+            <th class="text-left">Date Start</th>
+            <th class="text-left">Date End</th>
             <th class="text-left"></th>
             <th class="text-left"></th>
           </tr>
@@ -63,6 +65,9 @@
             <td>{{ transaction.doctor.doctorNavigation.fullName }}</td>
             <td>{{ transaction.patient.patientNavigation.fullName }}</td>
             <td>{{ transaction.location.substring(0, 35) }}...</td>
+
+            <td>{{ transaction.dateStart.substring(0, 16)}}</td>
+                  <td>{{ transaction.dateEnd.substring(0, 16)}}</td>
 
             <td>
               <transaction-detail-page

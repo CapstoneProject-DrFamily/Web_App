@@ -82,7 +82,7 @@
           <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Account Detail</div>
-              <v-text-field
+              <!-- <v-text-field
                 @change="onChange = true"
                 class="pt-6"
                 solo
@@ -92,7 +92,7 @@
                 prepend-icon="mdi-account-box"
                 required
                 disabled
-              ></v-text-field>
+              ></v-text-field> -->
 
               <v-text-field
                 @change="onChange = true"
@@ -130,7 +130,7 @@
                     @change="onChange = true"
                     class="pt-4"
                     solo
-                    v-model="temporaryData.patientNavigation.birthday"
+                    v-model="computedDateFormatted"
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -405,7 +405,7 @@ export default {
     },
 
     Cancel() {
-      this.$emit("cancel");
+     
       if (this.onChange) {
         this.$confirm(
           "Do you really want to exit? Your change will all lost."
@@ -413,15 +413,24 @@ export default {
           if (res) {
             this.temporaryData = JSON.parse(JSON.stringify(this.patient));
             this.show = false;
+             this.$emit("cancel");
           }
         });
       } else {
         this.show = false;
+         this.$emit("cancel");
       }
     },
     changeSaved() {
       console.log(this.onChange);
     },
+
+        formatDate (date) {
+        if (!date) return null
+
+        const [year, month, day] = date.split('-')
+        return `${month}/${day}/${year}`
+      },
 
     async updatePatient() {
       this.$refs.form.validate();
@@ -492,6 +501,12 @@ export default {
       // await new Promise((resolve) => setTimeout(resolve, 500));
     },
   },
+   computed: {
+      computedDateFormatted () {
+        return this.formatDate(this.temporaryData.patientNavigation.birthday)
+      },
+    },
+
   watch: {
     show: function () {
       if (this.show) {

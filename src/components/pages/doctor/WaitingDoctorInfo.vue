@@ -15,10 +15,10 @@
         height="200px"
       ></v-img>
       <v-card>
-         <v-row>
+        <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
-             Doctor Info
+              Doctor Info
             </p>
           </v-col>
         </v-row>
@@ -45,7 +45,7 @@
           <v-container>
             <v-form @submit.prevent>
               <div class="font-weight-bold customHeader">Account Detail</div>
-              <v-text-field
+              <!-- <v-text-field
                 class="pt-6"
                 filled
                 rounded
@@ -54,7 +54,7 @@
                 label="Username"
                 prepend-icon="mdi-account-box"
                 required
-              ></v-text-field>
+              ></v-text-field> -->
 
               <v-text-field
                 @change="onChange = true"
@@ -74,7 +74,7 @@
                 prepend-icon="mdi-gender-male-female"
               >
                 <v-radio value="Male" label="Male"> </v-radio>
-                <v-radio value="Female" label="Female"> </v-radio>
+                <v-radio value="Female" label="Female" > </v-radio>
               </v-radio-group>
 
               <v-text-field
@@ -83,7 +83,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.doctorNavigation.birthday"
+                v-model="computedDateFormatted"
                 label="Birthday"
                 prepend-icon="mdi-calendar"
                 hint="MM/DD/YYYY format"
@@ -247,6 +247,12 @@ export default {
     };
   },
   methods: {
+    formatDate(date) {
+      if (!date) return null;
+
+      const [year, month, day] = date.split("-");
+      return `${month}/${day}/${year}`;
+    },
     confirmDialog(typed) {
       if (typed) {
         this.$confirm("Do you want to approve this doctor ?").then((res) => {
@@ -268,7 +274,7 @@ export default {
     },
 
     async denyDoctor() {
-           var isSuccess = false;
+      var isSuccess = false;
       this.loading = true;
 
       let data = {
@@ -308,7 +314,10 @@ export default {
         username: this.doctor.doctorNavigation.account.username,
       };
       var response = await axios
-        .put(APIHelper.getAPIDefault() + "Users?isAcceptDoctor="+isApproved, data)
+        .put(
+          APIHelper.getAPIDefault() + "Users?isAcceptDoctor=" + isApproved,
+          data
+        )
         .catch(function (error) {
           console.log(error);
         });
@@ -332,6 +341,11 @@ export default {
           this.specialities.push(response.data[i]);
         }
       }
+    },
+  },
+  computed: {
+    computedDateFormatted() {
+      return this.formatDate(this.temporaryData.doctorNavigation.birthday);
     },
   },
   watch: {

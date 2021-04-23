@@ -15,7 +15,7 @@
         height="200px"
       ></v-img>
       <v-card>
-         <v-row>
+        <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
               Update Doctor
@@ -24,14 +24,16 @@
         </v-row>
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
-            <v-img v-if="temporaryData.doctorNavigation.image != null"
+            <v-img
+              v-if="temporaryData.doctorNavigation.image != null"
               contain
               max-height="80%"
               max-width="80%"
               :src="temporaryData.doctorNavigation.image"
             ></v-img>
 
-            <v-img v-if="temporaryData.doctorNavigation.image == null"
+            <v-img
+              v-if="temporaryData.doctorNavigation.image == null"
               contain
               max-height="80%"
               max-width="80%"
@@ -45,8 +47,6 @@
               max-width="80%"
               :src="imagePreview"
             ></v-img>
-
-            
           </v-row>
           <v-file-input
             @change="onChange = true"
@@ -64,7 +64,7 @@
           <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Account Detail</div>
-              <v-text-field
+              <!-- <v-text-field
                 @change="onChange = true"
                 class="pt-6"
                 solo
@@ -74,7 +74,7 @@
                 prepend-icon="mdi-account-box"
                 required
                 disabled
-              ></v-text-field>
+              ></v-text-field> -->
 
               <v-text-field
                 @change="onChange = true"
@@ -85,7 +85,9 @@
                 label="Full Name*"
                 required
                 :rules="[
-                  v => v.length < 50 && v.length > 3 || 'Your fullname must between 3 - 50 character',
+                  (v) =>
+                    (v.length < 50 && v.length > 3) ||
+                    'Your fullname must between 3 - 50 character',
                 ]"
               ></v-text-field>
               <v-radio-group
@@ -110,7 +112,8 @@
                     @change="onChange = true"
                     class="pt-4"
                     solo
-                    v-model="temporaryData.doctorNavigation.birthday"
+                    v-model="computedDateFormatted"
+                   
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -130,7 +133,9 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.dialog.save(temporaryData.doctorNavigation.birthday)"
+                    @click="
+                      $refs.dialog.save(temporaryData.doctorNavigation.birthday)
+                    "
                   >
                     OK
                   </v-btn>
@@ -170,7 +175,8 @@
                 Additional details
               </div>
 
-              <v-text-field
+              <v-select
+                :items="degrees"
                 @change="onChange = true"
                 class="pt-6"
                 solo
@@ -179,9 +185,11 @@
                 prepend-icon="mdi-license"
                 required
                 :rules="[
-                  v => v.length < 50 && v.length > 3 || 'Your degree must between 3 - 50 character',
+                  (v) =>
+                    (v.length < 50 && v.length > 3) ||
+                    'Your degree must between 3 - 50 character',
                 ]"
-              ></v-text-field>
+              ></v-select>
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
@@ -191,7 +199,9 @@
                 prepend-icon="mdi-trophy-award"
                 required
                 :rules="[
-                  v => v.length < 50 && v.length > 0 || 'Your experience must be filled',
+                  (v) =>
+                    (v.length < 50 && v.length > 0) ||
+                    'Your experience must be filled',
                 ]"
               ></v-text-field>
               <v-select
@@ -204,26 +214,31 @@
                 label="Speciality*"
                 solo
               ></v-select>
-              <v-text-field
+              <v-select
+                :items="schools"
                 @change="onChange = true"
                 class="pt-4"
                 solo
                 label="School*"
                 prepend-icon="mdi-school"
                 required
-                   :rules="[
-                  v => v.length < 50 && v.length > 3 || 'Your school must be filled',
+                :rules="[
+                  (v) =>
+                    (v.length < 50 && v.length > 3) ||
+                    'Your school must be filled',
                 ]"
                 v-model="temporaryData.school"
-              ></v-text-field>
+              ></v-select>
               <v-textarea
                 @change="onChange = true"
                 class="pt-4"
                 v-model="temporaryData.description"
                 label="Description*"
                 solo
-                   :rules="[
-                  v => v.length < 50 && v.length > 3 || 'Your description must be filled',
+                :rules="[
+                  (v) =>
+                    (v.length < 50 && v.length > 3) ||
+                    'Your description must be filled',
                 ]"
                 prepend-icon="mdi-account-details"
                 required
@@ -290,6 +305,26 @@ export default {
       imagePreview: defaultImage,
       show: false,
       loading: false,
+      DOB: '',
+      schools: [
+        "Hanoi Medical University",
+        "University of Medicine And Pharmacy at HCMC",
+        "University of Medicine Pham Ngoc Thach",
+        "Hai Phong University of Medicine And Pharmacy",
+        "Thai Binh University of Medicine And Pharmacy",
+        "Vinh Medical University",
+        "Can Tho University of Medicine And Pharmacy",
+        "Other",
+      ],
+      degrees: [
+        "Bachelor",
+        "Bachelor of Medicine",
+        "Bachelor of Medical Sciences",
+        "Bachelor of Public Health",
+        "Bachelor of Surgery",
+        "Doctor of Medicine",
+        "Other",
+      ],
     };
   },
   methods: {
@@ -330,7 +365,7 @@ export default {
     },
 
     async updateDoctor() {
-       this.$refs.form.validate();
+      this.$refs.form.validate();
       if (!this.valid) {
         return;
       }
@@ -392,6 +427,12 @@ export default {
       this.imageData = null;
       this.imagePreview = defaultImage;
     },
+     formatDate (date) {
+        if (!date) return null
+
+        const [year, month, day] = date.split('-')
+        return `${month}/${day}/${year}`
+      },
   },
   watch: {
     imageData: function () {
@@ -409,6 +450,11 @@ export default {
       }
     },
   },
+  computed: {
+      computedDateFormatted () {
+        return this.formatDate(this.temporaryData.doctorNavigation.birthday)
+      },
+    },
 };
 </script>
 

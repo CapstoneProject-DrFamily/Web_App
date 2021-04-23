@@ -93,6 +93,13 @@
                 :rules="[(v) => !!v || 'Please enter service description']"
               ></v-textarea>
 
+              <v-switch
+                v-model="createData.isDefault"
+                inset
+                class="pb-3"
+                label="Default service"
+              ></v-switch>
+
               <v-row justify="center" class="pt-3">
                 <v-btn
                   color="info"
@@ -142,13 +149,13 @@ export default {
   data() {
     return {
       valid: false,
-
       createData: {
         serviceName: null,
         servicePrice: null,
         serviceDescription: null,
         specialtyId: null,
         image: null,
+        isDefault: false,
       },
 
       modal: false,
@@ -195,9 +202,8 @@ export default {
       if (this.imageData != null) {
         imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
+        this.createData.image = imgURL;
       }
-
-      this.createData = imgURL;
 
       var response = await axios
         .post(APIHelper.getAPIDefault() + "Services", this.createData)
@@ -217,24 +223,28 @@ export default {
     resetForm() {
       this.$refs.form.resetValidation();
       for (let data in this.createData) {
-        this.createData[data] = null;
+        if (data == "isDefault") {
+          this.createData[data] = false;
+        } else {
+          this.createData[data] = null;
+        }
       }
     },
   },
-      imageData: function () {
-      // preview image before upload
-      if (this.imageData != null) {
-        var reader = new FileReader();
-        reader.onload = (e) => {
-          this.imagePreview = e.target.result;
-        };
-        // Start the reader job - read file as a data url (base64 format)
-        reader.readAsDataURL(this.imageData);
-      } else {
-        this.imageData = null;
-        this.imagePreview = defaultImage;
-      }
-    },
+  imageData: function () {
+    // preview image before upload
+    if (this.imageData != null) {
+      var reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview = e.target.result;
+      };
+      // Start the reader job - read file as a data url (base64 format)
+      reader.readAsDataURL(this.imageData);
+    } else {
+      this.imageData = null;
+      this.imagePreview = defaultImage;
+    }
+  },
 };
 </script>
 

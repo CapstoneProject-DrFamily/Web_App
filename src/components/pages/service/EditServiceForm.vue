@@ -110,6 +110,13 @@
                 :rules="[(v) => !!v || 'Please enter service description']"
               ></v-textarea>
 
+                        <v-switch
+                v-model="temporaryData.isDefault"
+                inset
+                class="pb-3"
+                label="Default service"
+              ></v-switch>
+
               <v-row justify="center" class="pt-3">
                 <v-btn
                   color="info"

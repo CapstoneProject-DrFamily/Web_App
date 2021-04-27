@@ -32,6 +32,7 @@
               max-width="80%"
               :src="temporaryData.image"
             ></v-img>
+
             <v-img
               v-if="temporaryData.image == null"
               contain
@@ -179,8 +180,7 @@ export default {
 
       this.loading = true;
 
-
-       if (this.imageData != null) {
+      if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
         this.temporaryData.image = imgURL;
@@ -203,9 +203,9 @@ export default {
 
       // await new Promise((resolve) => setTimeout(resolve, 500));
     },
-    
   },
-      imageData: function () {
+  watch: {
+    imageData: function () {
       // preview image before upload
       if (this.imageData != null) {
         var reader = new FileReader();
@@ -219,6 +219,7 @@ export default {
         this.imagePreview = defaultImage;
       }
     },
+  },
 };
 </script>
 

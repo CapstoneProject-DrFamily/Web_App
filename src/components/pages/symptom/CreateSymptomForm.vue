@@ -16,14 +16,14 @@
         height="200px"
       ></v-img>
       <v-card>
-          <v-row>
+        <v-row>
           <v-col>
             <p class="text-center customHeader font-weight-bold pt-6 pb-6">
               Create Specialty
             </p>
           </v-col>
         </v-row>
-           <v-card-text>
+        <v-card-text>
           <v-row justify="center">
             <v-img
               contain
@@ -45,7 +45,7 @@
 
         <v-card-text>
           <v-container>
-                         <v-form @submit.prevent ref="form" v-model="valid">
+            <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Specialty</div>
               <v-text-field
                 @change="onChange = true"
@@ -67,7 +67,7 @@
                 required
                 :rules="[(v) => !!v || 'Please enter symptom type']"
               ></v-text-field> -->
-                      <v-textarea
+              <v-textarea
                 @change="onChange = true"
                 class="pt-4"
                 v-model="createData.description"
@@ -129,11 +129,11 @@ export default {
         name: null,
         type: null,
         description: null,
-        image: 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg'
-
+        image:
+          "https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg",
       },
 
-          imageData: null,
+      imageData: null,
       imagePreview: defaultImage,
 
       modal: false,
@@ -159,25 +159,23 @@ export default {
       }
       var isCreated = false;
 
-         var imgURL = null;
-         
+      var imgURL = null;
+
       this.loading = true;
-      
+
       if (this.imageData != null) {
         imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
       }
       this.createData.image = imgURL == null ? this.createData.image : imgURL;
 
-
-
       var response = await axios
         .post(APIHelper.getAPIDefault() + "Specialties", this.createData)
         .catch(function (error) {
           console.log(error);
         });
-      if(response.status == 201) {
-          isCreated = true;
+      if (response.status == 201) {
+        isCreated = true;
       }
 
       // await new Promise((resolve) => setTimeout(resolve, 500));
@@ -187,15 +185,15 @@ export default {
       this.loading = false;
     },
     resetForm() {
-
       this.$refs.form.resetValidation();
-      for(let data in this.createData) {
-          this.createData[data] = null;
+      for (let data in this.createData) {
+        this.createData[data] = null;
       }
-      this.createData.image = 'https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg';
+      this.createData.image =
+        "https://st4.depositphotos.com/14953852/24787/v/600/depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg";
     },
   },
-   watch: {
+  watch: {
     imageData: function () {
       // preview image before upload
       if (this.imageData != null) {

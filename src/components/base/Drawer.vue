@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer app width="260" dark v-model="this.$store.state.drawerOn"  class="blue darken-1"
+  <v-navigation-drawer app width="260" dark class="blue darken-1" v-model="this.$store.state.drawerOn"
   
   >
     <!-- v-model="this.$store.state.drawerOn" -->
@@ -122,3 +122,9 @@ a {
   text-decoration: none;
 }
 </style>
+
+<script>
+export default {
+  // props: ["drawer"],
+}
+</script>

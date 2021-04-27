@@ -48,6 +48,7 @@ export default {
     getDrawer() {
       this.$store.state.drawerOn = !this.$store.state.drawerOn;
       console.log(this.$store.state.drawerOn);
+      // this.$emit("drawer");
     },
   },
  

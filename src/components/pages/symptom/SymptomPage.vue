@@ -65,7 +65,7 @@
               ></v-img>
             </td>
             <td>{{ symptom.name }}</td>
-            <td>{{ symptom.description }}</td>
+            <td>{{ symptom.description.substring(0, 20) }}...</td>
 
             <td>
               <edit-symptom-form

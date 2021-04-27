@@ -90,7 +90,12 @@
                 solo
                 prepend-icon="mdi-book-open-variant"
                 required
-                :rules="[(v) => !!v || 'Please enter service description']"
+                :rules="[
+                  (v) => !!v || 'Please enter service description',
+                  (v) =>
+                    (v && v.length <= 50) ||
+                    'Description must be less than 50 characters',
+                ]"
               ></v-textarea>
 
               <v-switch
@@ -179,6 +184,8 @@ export default {
           // console.log(response.data[i]);
           this.specialities.push(response.data[i]);
         }
+
+        this.createData.specialtyId = this.specialities[0];
       }
     },
     cancel() {
@@ -195,6 +202,7 @@ export default {
       if (!this.valid) {
         return;
       }
+
       var isCreated = false;
 
       this.loading = true;
@@ -203,6 +211,11 @@ export default {
         imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
         this.createData.image = imgURL;
+      }
+
+      if (this.createData.image == null) {
+        this.createData.image =
+          "https://www.thermaxglobal.com/wp-content/uploads/2020/05/image-not-found.jpg";
       }
 
       var response = await axios
@@ -225,7 +238,9 @@ export default {
       for (let data in this.createData) {
         if (data == "isDefault") {
           this.createData[data] = false;
-        } else {
+        } else if (data == "specialtyId")
+          this.createData[data] = this.specialities[0];
+        else {
           this.createData[data] = null;
         }
       }

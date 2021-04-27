@@ -43,6 +43,57 @@
           </v-slider>
         </v-col>
       </v-row>
+      <v-form @submit.prevent ref="formParam" v-model="validParam">
+        <v-row class="pl-3 pt-6" align="center">
+          <v-col cols="6">
+            <v-row>
+              <v-col cols="auto pt-9"> Active appointment during </v-col>
+              <v-col cols="3 pt-6">
+                <v-text-field
+                  class="centered-input"
+                  v-if="doctorConfig != null"
+                  type="number"
+                  solo
+                  :rules="[
+                    (v) => v > 0 || 'Number must greater than 0',
+                    (v) => Number.isInteger(v) || 'Must be integer',
+                  ]"
+                  v-model.number="doctorConfig.appointmentNotifyTime"
+              
+                ></v-text-field>
+              </v-col>
+               <v-col cols="auto pt-9">
+                  minutes
+                </v-col>
+            </v-row>
+          </v-col>
+
+          <v-col cols="6">
+            <v-row>
+              <v-col cols="auto pt-9"> Total sample test  </v-col>
+              <v-col cols="3 pt-6">
+                <v-text-field
+                solo
+                  v-if="doctorConfig != null"
+                  type="number"
+                  class="centered-input"
+                  :rules="[
+                    (v) =>
+                      (v > 0 && v < 4) ||
+                      'Number must greater than 0 and less than 4',
+                    (v) => Number.isInteger(v) || 'Must be integer',
+                  ]"
+                  v-model.number="doctorConfig.imageQuantity"
+                
+                ></v-text-field> </v-col>
+                <v-col cols="auto pt-9">
+                  images
+                </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-form>
+
       <v-row>
         <v-col
           ><div class="pt-10 pb-3 pl-3"><h2>User App Setting</h2></div></v-col
@@ -72,7 +123,6 @@
             v-model="select"
             :items="items"
             label="Select distance in patient application"
-            
             chips
             filled
             rounded
@@ -226,6 +276,7 @@ export default {
     return {
       select: [],
       items: [2, 4, 5, 8, 10],
+      validParam: false,
 
       value: 30,
       min: 30,
@@ -252,12 +303,16 @@ export default {
   },
   methods: {
     async saveConfiguration() {
+      this.$refs.formParam.validate();
+      if (!this.validParam) {
+        return;
+      }
+
       let isSave = false;
       this.$isLoading(true);
-      if(this.select.length == 0) {
-        
-     this.setSnackbar("Failed. Please select km distance", "error");
-           this.$isLoading(false);
+      if (this.select.length == 0) {
+        this.setSnackbar("Failed. Please select km distance", "error");
+        this.$isLoading(false);
         return;
       }
 
@@ -276,10 +331,10 @@ export default {
       console.log(this.select);
 
       var list = [];
-      if(typeof this.select != 'number') {
+      if (typeof this.select != "number") {
         list.push(this.select[0]);
       } else {
-      list.push(this.select);
+        list.push(this.select);
       }
 
       console.log(this.select);
@@ -332,7 +387,6 @@ export default {
       if (doctorApp.status == 200) {
         this.doctorConfig = doctorApp.data;
         this.value = doctorApp.data.timeout;
-        
       }
 
       this.$isLoading(false);
@@ -389,5 +443,8 @@ export default {
 <style scoped>
 .test {
   background-color: red;
+}
+.centered-input >>> input {
+  text-align: center;
 }
 </style>

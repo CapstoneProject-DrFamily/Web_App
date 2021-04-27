@@ -85,7 +85,6 @@
                 v-model="temporaryData.specialtyId"
                 label="Speciality*"
                 solo
-             
               ></v-select>
 
               <v-text-field
@@ -107,10 +106,15 @@
                 solo
                 prepend-icon="mdi-book-open-variant"
                 required
-                :rules="[(v) => !!v || 'Please enter service description']"
+                :rules="[
+                  (v) => !!v || 'Please enter service description',
+                  (v) =>
+                    (v && v.length <= 50) ||
+                    'Description must be less than 50 characters',
+                ]"
               ></v-textarea>
 
-                        <v-switch
+              <v-switch
                 v-model="temporaryData.isDefault"
                 inset
                 class="pb-3"
@@ -195,7 +199,7 @@ export default {
     },
 
     resetForm() {
-            this.imageData = null;
+      this.imageData = null;
       this.imagePreview = defaultImage;
       this.onChange = false;
       this.temporaryData = JSON.parse(JSON.stringify(this.service));
@@ -232,16 +236,17 @@ export default {
         console.log(imgURL);
         this.temporaryData.image = imgURL;
       }
-        console.log(this.temporaryData);
+      console.log(this.temporaryData);
 
-             var data = await axios
-        .delete(APIHelper.getAPIDefault() + "Services/" + this.temporaryData.serviceId)
+      var data = await axios
+        .delete(
+          APIHelper.getAPIDefault() + "Services/" + this.temporaryData.serviceId
+        )
         .catch(function (error) {
           console.log(error);
         });
 
-
-            var response = await axios
+      var response = await axios
         .post(APIHelper.getAPIDefault() + "Services", this.temporaryData)
         .catch(function (error) {
           console.log(error);
@@ -268,7 +273,7 @@ export default {
       // await new Promise((resolve) => setTimeout(resolve, 500));
     },
   },
-   watch: {
+  watch: {
     imageData: function () {
       // preview image before upload
       if (this.imageData != null) {

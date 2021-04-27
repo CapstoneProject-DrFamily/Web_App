@@ -70,7 +70,8 @@
             </td>
             <td>{{ service.serviceName }}</td>
             <td>{{ service.servicePrice }} VNĐ</td>
-            <td>{{ service.serviceDescription }}</td>
+      
+            <td>{{ getDescription(service.serviceDescription) }}  </td>
 
             <td>
               <edit-service-form
@@ -187,6 +188,14 @@ export default {
     };
   },
   methods: {
+    getDescription(description) {
+        if(description.length < 20) {
+          return description;
+        } else {
+          return description.substring(0, 20) + "...";
+        }
+    },
+
     searchService() {
       this.searchValue = this.searchBoxValue;
       if (this.page != 1) {

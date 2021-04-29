@@ -112,7 +112,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deletePatient(patient.patientId)"
+                        @click.prevent="deletePatient(patient)"
                       >
                         I accept
                       </v-btn>
@@ -248,14 +248,14 @@ export default {
       }
     },
 
-    async deletePatient(id) {
+    async deletePatient(patient) {
       var success = false;
       this.isDeleting = true;
 
       // console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Patients/" + id)
+        .delete(APIHelper.getAPIDefault() + "Patients/" + patient.patientId)
         .catch(function (error) {
           console.log(error);
         });
@@ -263,8 +263,21 @@ export default {
       if (response.status == 204) {
         success = true;
       }
+     
+           var response1 = await axios
+        .delete(APIHelper.getAPIDefault() + "Users/" + patient.patientNavigation.account.accountId)
+        .catch(function (error) {
+          console.log(error);
+        });
 
-      this.patients.find((x) => x.patientId === id).dltDialog.isShow = false;
+         if (response1.status == 204) {
+        success = true;
+      }
+
+
+
+
+      this.patients.find((x) => x.patientId === patient.patientId).dltDialog.isShow = false;
       if (success) {
         if (this.page != 1) {
           this.page = 1;

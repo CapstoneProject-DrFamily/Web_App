@@ -113,7 +113,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteDoctor(doctor.doctorId)"
+                        @click.prevent="deleteDoctor(doctor)"
                       >
                         I accept
                       </v-btn>
@@ -258,14 +258,14 @@ export default {
         this.setSnackbar("Add Doctor Failed", "error");
       }
     },
-    async deleteDoctor(id) {
+    async deleteDoctor(doctor) {
       var success = false;
       this.isDeleting = true;
 
       // console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Doctors/" + id)
+        .delete(APIHelper.getAPIDefault() + "Doctors/" + doctor.doctorId)
         .catch(function (error) {
           console.log(error);
         });
@@ -274,7 +274,19 @@ export default {
         success = true;
       }
 
-      this.doctors.find((x) => x.doctorId === id).dltDialog.isShow = false;
+        var response1 = await axios
+        .delete(APIHelper.getAPIDefault() + "Users/" + doctor.doctorNavigation.account.accountId)
+        .catch(function (error) {
+          console.log(error);
+        });
+
+         if (response1.status == 204) {
+        success = true;
+      }
+
+
+
+      this.doctors.find((x) => x.doctorId === doctor.doctorId).dltDialog.isShow = false;
       if (success) {
          if (this.page != 1) {
           this.page = 1;

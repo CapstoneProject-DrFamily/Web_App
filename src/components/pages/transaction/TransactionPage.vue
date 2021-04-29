@@ -107,6 +107,14 @@
                 v-if="transaction.status == 5"
                 >Unpaid</v-chip
               >
+
+                 <v-chip
+                class="ml-3"
+                color="grey"
+                     text-color="white"
+                v-if="transaction.status == 6"
+                >Sample</v-chip
+              >
             </td>
           </tr>
           <td class="text-center" colspan="10">

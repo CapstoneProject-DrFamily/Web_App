@@ -251,14 +251,14 @@
                             v-model.number="
                               item.prescriptionDetail.noonQuantity
                             "
-                            label="Noon"
+                            label="4"
                             filled
                             rounded
                             required
                             type="number"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="4">
+                        <v-col cols="auto">
                           <v-text-field
                             :rules="rules"
                             label="Afternoon"
@@ -466,6 +466,7 @@ export default {
         return;
       }
 
+    
       this.templateName = this.disease.diseaseCode+"-" + this.templateName;
 
       for (let i = 0; i < this.templates.length; i++) {

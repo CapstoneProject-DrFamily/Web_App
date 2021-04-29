@@ -199,6 +199,14 @@
                     v-if="transaction.status == 5"
                     >Unpaid</v-chip
                   >
+
+                      <v-chip
+                class="ml-3"
+                color="grey"
+                     text-color="white"
+                v-if="transaction.status == 6"
+                >Sample</v-chip
+              >
                 </v-col>
               </v-row>
 

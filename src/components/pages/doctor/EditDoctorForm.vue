@@ -237,8 +237,11 @@
                 solo
                 :rules="[
                   (v) =>
-                    (v.length < 50 && v.length > 3) ||
+                    (v.length > 3) ||
                     'Your description must be filled',
+                     (v) =>
+                    (!vv && v.length < 255) ||
+                    'Your description must between 3 ~ 255 character',
                 ]"
                 prepend-icon="mdi-account-details"
                 required

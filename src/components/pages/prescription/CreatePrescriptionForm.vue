@@ -251,14 +251,14 @@
                             v-model.number="
                               item.prescriptionDetail.noonQuantity
                             "
-                            label="4"
+                            label="Noon"
                             filled
                             rounded
                             required
                             type="number"
                           ></v-text-field>
                         </v-col>
-                        <v-col cols="auto">
+                        <v-col cols="4">
                           <v-text-field
                             :rules="rules"
                             label="Afternoon"

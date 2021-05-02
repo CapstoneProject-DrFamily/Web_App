@@ -98,20 +98,21 @@
                 ]"
               ></v-text-field>
 
-              <v-text-field
+              <v-select
                 @change="onChange = true"
                 class="pt-4"
                 solo
                 v-model="temporaryData.dependentRelationShip"
+                :items="listRelationship"
                 prepend-icon="mdi-account"
-                label="Full Name*"
+                label="Relationship*"
                 required
                 :rules="[
                   (v) =>
                     (v.length < 50 && v.length > 0) ||
                     'Dependent relationship must between 0 - 50 character',
                 ]"
-              ></v-text-field>
+              ></v-select>
 
               <v-radio-group
                 @change="onChange = true"
@@ -277,6 +278,8 @@ import APIHelper from "../../../helpers/api";
 export default {
   created() {
     this.temporaryData = JSON.parse(JSON.stringify(this.dependent));
+    this.fetchAppConfig();
+
 
   },
   props: ["dependent"],
@@ -294,6 +297,7 @@ export default {
       show: false,
       loading: false,
       bloodType: ["A", "B", "AB", "O"],
+      listRelationship : [],
     };
   },
   components: {},
@@ -308,6 +312,20 @@ export default {
           this.deleteDependent();
         }
       });
+    },
+       async fetchAppConfig() {
+      this.$isLoading(true);
+      var patientApp = await axios
+        .get("https://capstoneapi-dev.azurewebsites.net/api/v1/AppConfigs/" + 1)
+        .catch(function (error) {
+          console.log(error);
+        });
+  
+
+      this.listRelationship = patientApp.data.relationShips;
+   
+
+      this.$isLoading(false);
     },
 
     async deleteDependent() {

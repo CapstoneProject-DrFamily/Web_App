@@ -47,7 +47,7 @@
         <v-row class="pl-3 pt-6" align="center">
           <v-col cols="6">
             <v-row>
-              <v-col cols="auto pt-9"> Active appointment during </v-col>
+              <v-col cols="6 pt-9"> Active appointment during </v-col>
               <v-col cols="3 pt-6">
                 <v-text-field
                   class="centered-input"
@@ -70,7 +70,7 @@
 
           <v-col cols="6">
             <v-row>
-              <v-col cols="auto pt-9"> Total sample test  </v-col>
+              <v-col cols="3 pt-9"> Total sample test  </v-col>
               <v-col cols="3 pt-6">
                 <v-text-field
                 solo
@@ -91,6 +91,83 @@
                 </v-col>
             </v-row>
           </v-col>
+        </v-row>
+
+         <v-row class="pl-3 pt-6" align="center">
+          <v-col cols="6">
+            <v-row>
+              <v-col cols="6 pt-9"> Gap time in schedule </v-col>
+              <v-col cols="3 pt-6">
+                 <v-text-field
+                  class="centered-input"
+                  v-if="doctorConfig != null"
+                  type="number"
+                  solo
+                  :rules="[
+                    (v) => v >= 0 && v <= 23 || 'Range 0 ~ 23',
+                    (v) => Number.isInteger(v) || 'Must be integer',
+                    (v) =>  v != 0 || this.gaptime.minutes != 0 || 'Invalid',
+                  ]"
+                  v-model.number="gaptime.hours"
+              
+                ></v-text-field>
+              </v-col>
+               <v-col cols="auto pt-9">
+                  hours
+                </v-col>
+            </v-row>
+          </v-col>
+
+          <v-col cols="6">
+            <v-row>
+              <v-col cols="3 pt-6">     <v-text-field
+                  class="centered-input"
+                  v-if="doctorConfig != null"
+                  type="number"
+                  solo
+                  :rules="[
+                    (v) =>  v >= 0 && v <= 59 || 'Range 0 ~ 59',
+                    (v) => Number.isInteger(v) || 'Must be integer',
+                       (v) =>  v != 0 || this.gaptime.hours != 0 || 'Invalid',
+       
+                  ]"
+                  v-model.number="gaptime.minutes"
+              
+                ></v-text-field> </v-col>
+     
+                <v-col cols="auto pt-9">
+                  minutes
+                </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+          
+
+          <v-row class="pl-3 pt-6" align="center">
+          <v-col cols="6">
+            <v-row>
+              <v-col cols="6 pt-9"> Preparation time </v-col>
+              <v-col cols="3 pt-6">
+                <v-text-field
+                  class="centered-input"
+                  v-if="doctorConfig != null"
+                  type="number"
+                  solo
+                  :rules="[
+                    (v) => v > 0 && v <= 30 || 'Number must greater than 0 and less than 30',
+                    (v) => Number.isInteger(v) || 'Must be integer',
+                  ]"
+                  v-model.number="doctorConfig.minusTimeInMinute"
+              
+                ></v-text-field>
+              </v-col>
+               <v-col cols="auto pt-9">
+                  minutes
+                </v-col>
+            </v-row>
+          </v-col>
+
+        
         </v-row>
       </v-form>
 
@@ -278,6 +355,11 @@ export default {
       items: [2, 4, 5, 8, 10],
       validParam: false,
 
+      gaptime : {
+        hours : 0,
+        minutes : 0, 
+      },
+
       value: 30,
       min: 30,
       max: 300,
@@ -317,6 +399,11 @@ export default {
       }
 
       this.doctorConfig.timeout = this.value;
+      
+      console.log(this.gaptime.hours + (this.gaptime.minutes/60) );
+
+
+      this.doctorConfig.examinationHour =  this.gaptime.hours + (this.gaptime.minutes/60)
 
       var doctorApp = await axios
         .put(
@@ -363,6 +450,10 @@ export default {
       }
     },
 
+       getDecimalPart(value) {
+         return value % 1.0;
+    },
+
     async fetchAppConfig() {
       this.$isLoading(true);
       var patientApp = await axios
@@ -387,10 +478,16 @@ export default {
       if (doctorApp.status == 200) {
         this.doctorConfig = doctorApp.data;
         this.value = doctorApp.data.timeout;
+
+        this.gaptime.hours = Math.trunc(doctorApp.data.examinationHour);
+        this.gaptime.minutes = this.getDecimalPart(doctorApp.data.examinationHour) * 60;
+
       }
 
       this.$isLoading(false);
     },
+
+
 
     createNewRelationship() {
       this.$refs.form.validate();
@@ -437,6 +534,17 @@ export default {
       });
     },
   },
+ watch: {
+        'gaptime.hours' : function () {
+
+           this.$refs.formParam.validate();
+    },
+      'gaptime.minutes' : function () {
+  
+          this.$refs.formParam.validate();
+      }
+    
+  }
 };
 </script>
 

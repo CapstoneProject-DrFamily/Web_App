@@ -268,7 +268,7 @@
                             type="number"
                             filled
                             rounded
-                            required
+                            required  
                           ></v-text-field>
                         </v-col>
                       </v-row>

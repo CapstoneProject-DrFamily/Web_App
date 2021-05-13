@@ -34,7 +34,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.transactionId"
+                v-model="transaction.id"
                 label="Transaction ID"
                 prepend-icon="mdi-account-box"
                 required
@@ -92,7 +92,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.doctor.doctorNavigation.fullName"
+                v-model="transaction.doctor.fullname"
                 label="Doctor"
                 prepend-icon="mdi-account"
               ></v-text-field>
@@ -105,7 +105,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.patient.patientNavigation.fullName"
+                v-model="transaction.patient.fullname"
                 label="Patient"
                 prepend-icon="mdi-account"
                 required
@@ -134,7 +134,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.service.serviceName"
+                v-model="transaction.service.name"
                 label="Service"
                 prepend-icon="mdi-license"
                 required
@@ -145,7 +145,7 @@
                 filled
                 rounded
                 readonly
-                v-model="transaction.service.servicePrice"
+                v-model="transaction.service.price"
                 label="Service Price (VNĐ)"
                 prepend-icon="mdi-currency-usd"
                 required

@@ -16,8 +16,17 @@
         </v-btn>
       </template>
     </v-snackbar>
+    
+          <v-chip
+    
+          v-bind="attrs"
+          v-on="on"
+          color="primary"
+          class="ml-1 mr-1 mb-1"
+          >{{ dependent.dependentName }}</v-chip
+        >
 
-    <v-dialog width="450" v-model="show" persistent>
+    <!-- <v-dialog width="450" v-model="show" persistent>
       <template v-slot:activator="{ on, attrs }">
         <v-chip
           close
@@ -265,7 +274,7 @@
           </v-container>
         </v-card-text>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
   </div>
 </template>
 

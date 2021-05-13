@@ -56,7 +56,7 @@
         </thead>
 
         <tbody>
-          <tr v-for="medicine in medicines" :key="medicine.medicineId">
+          <tr v-for="medicine in medicines" :key="medicine.id">
             <td>{{ medicine.name }}</td>
             <td>
               <div v-for="detail in medicine.detailForm" :key="detail">
@@ -108,7 +108,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteMedicine(medicine.medicineId)"
+                        @click.prevent="deleteMedicine(medicine.id)"
                       >
                         I accept
                       </v-btn>
@@ -225,7 +225,7 @@ export default {
         this.totalPage = response.data.totalPages;
         for (let i = 0; i < response.data.medicines.length; i++) {
           if (!response.data.medicines[i].disable) {
-            let name = "dialog" + response.data.medicines[i].medicineId;
+            let name = "dialog" + response.data.medicines[i].id;
             let detailForm = response.data.medicines[i].form.split(";");
             response.data.medicines[i].detailForm = detailForm;
             let dltDialog = { name: name, isShow: false };
@@ -278,7 +278,7 @@ export default {
         success = true;
       }
 
-      this.medicines.find((x) => x.medicineId === id).dltDialog.isShow = false;
+      this.medicines.find((x) => x.id === id).dltDialog.isShow = false;
       if (success) {
         if (this.page != 1) {
           this.page = 1;

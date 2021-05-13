@@ -384,7 +384,7 @@ export default {
               console.log(error);
             });
 
-          dependent.data.patientNavigation.birthday = dependent.data.patientNavigation.birthday.substring(
+          dependent.data.birthday = dependent.data.birthday.substring(
             0,
             10
           );

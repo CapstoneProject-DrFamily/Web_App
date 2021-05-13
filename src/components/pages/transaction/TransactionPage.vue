@@ -61,13 +61,18 @@
             v-for="transaction in transactions"
             :key="transaction.transactionId"
           >
-            <td>{{ transaction.transactionId.substring(0, 5) }}...</td>
-            <td>{{ transaction.doctor.doctorNavigation.fullName }}</td>
-            <td>{{ transaction.patient.patientNavigation.fullName }}</td>
+            <td>{{ transaction.id.substring(0, 5) }}...</td>
+            <td>{{ transaction.doctor.fullname }}</td>
+            <td>{{ transaction.patient.fullname }}</td>
             <td>{{ transaction.location.substring(0, 35) }}...</td>
 
-            <td>{{ transaction.dateStart.substring(0, 16)}}</td>
-                  <td>{{ transaction.dateEnd.substring(0, 16)}}</td>
+            <td>{{ transaction.dateStart.substring(0, 16) }}</td>
+              <td v-if="transaction.dateEnd == null">
+              
+            </td>
+            <td v-if="transaction.dateEnd != null">
+              {{ transaction.dateEnd.substring(0,16) }}
+            </td>
 
             <td>
               <transaction-detail-page
@@ -108,10 +113,10 @@
                 >Unpaid</v-chip
               >
 
-                 <v-chip
+              <v-chip
                 class="ml-3"
                 color="grey"
-                     text-color="white"
+                text-color="white"
                 v-if="transaction.status == 6"
                 >Sample</v-chip
               >
@@ -145,8 +150,6 @@
         </v-container>
       </v-col>
     </v-row>
-
-
   </v-container>
 </template>
 
@@ -163,7 +166,6 @@ export default {
 
   data() {
     return {
-
       type: "success",
       snackbar: false,
       message: ``,
@@ -204,7 +206,10 @@ export default {
           );
 
           response.data.dateStart = this.formatDay(response.data.dateStart);
-          response.data.dateEnd = this.formatDay(response.data.dateEnd);
+          if (response.data.dateEnd != null) {
+            console.log(response.data.dateEnd);
+            response.data.dateEnd = this.formatDay(response.data.dateEnd);
+          }
 
           this.transactions.push(response.data);
         }
@@ -248,9 +253,11 @@ export default {
             response.data.transactions[i].dateStart = this.formatDay(
               response.data.transactions[i].dateStart
             );
-            response.data.transactions[i].dateEnd = this.formatDay(
-              response.data.transactions[i].dateEnd
-            );
+            if (response.data.transactions[i].dateEnd != null) {
+              response.data.transactions[i].dateEnd = this.formatDay(
+                response.data.transactions[i].dateEnd
+              );
+            }
 
             this.transactions.push(response.data.transactions[i]);
           }

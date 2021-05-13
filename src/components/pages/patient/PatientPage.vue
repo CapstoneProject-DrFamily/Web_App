@@ -184,7 +184,7 @@ export default {
   methods: {
 
     getLocation(location) {
-      return CommonHelper.getLocation(location);
+      return CommonHelper.getLocationShort(location, 30);
     },  
 
     cancel() {
@@ -280,9 +280,6 @@ export default {
          if (response1.status == 204) {
         success = true;
       }
-
-
-
 
       this.patients.find((x) => x.id === patient.id).dltDialog.isShow = false;
       if (success) {

@@ -47,7 +47,7 @@
           <tr>
             <th class="text-left">Image</th>
             <th class="text-left">Name</th>
-            <th class="text-left">Phone</th>
+            <th class="text-left">Location</th>
             <th class="text-left">Email</th>
 
             <th class="text-left"></th>
@@ -56,17 +56,18 @@
         </thead>
 
         <tbody>
-          <tr v-for="patient in patients" :key="patient.patientId">
+          <tr v-for="patient in patients" :key="patient.id">
             <td class="pt-6 pb-6">
               <v-img
-                :src="patient.patientNavigation.image"
+                :src="patient.image"
                 width="100"
                 height="100"
               ></v-img>
             </td>
-            <td>{{ patient.patientNavigation.fullName }}</td>
-            <td>{{ patient.patientNavigation.phone }}</td>
-            <td>{{ patient.patientNavigation.email }}</td>
+            <td>{{ patient.fullname }}</td>
+            <td v-if="patient.location != null">{{ getLocation(patient.location) }}</td>
+             <td v-if="patient.location == null">Not updated yet</td>
+            <td>{{ patient.email }}</td>
 
             <td>
               <edit-patient-form
@@ -157,6 +158,7 @@
 import axios from "axios";
 import APIHelper from "../../../helpers/api";
 import EditPatientForm from "./EditPatientForm";
+import CommonHelper from '../../../helpers/common';
 
 export default {
   mounted() {
@@ -180,6 +182,11 @@ export default {
     };
   },
   methods: {
+
+    getLocation(location) {
+      return CommonHelper.getLocation(location);
+    },  
+
     cancel() {
       if (this.page != 1) {
         this.page = 1;
@@ -222,13 +229,13 @@ export default {
         this.totalPage = response.data.totalPages;
 
         for (let i = 0; i < response.data.patients.length; i++) {
-          if (!response.data.patients[i].patientNavigation.account.waiting) {
-            let name = "dialog" + response.data.patients[i].patientId;
+          if (!response.data.patients[i].account.waiting) {
+            let name = "dialog" + response.data.patients[i].id;
             let dltDialog = { name: name, isShow: false };
             response.data.patients[i].dltDialog = dltDialog;
-            response.data.patients[i].patientNavigation.birthday = response.data.patients[
+            response.data.patients[i].birthday = response.data.patients[
               i
-            ].patientNavigation.birthday.substring(0, 10);
+            ].birthday.substring(0, 10);
             this.patients.push(response.data.patients[i]);
           }
         }
@@ -255,7 +262,7 @@ export default {
       // console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Patients/" + patient.patientId)
+        .delete(APIHelper.getAPIDefault() + "Patients/" + patient.id)
         .catch(function (error) {
           console.log(error);
         });
@@ -265,7 +272,7 @@ export default {
       }
      
            var response1 = await axios
-        .delete(APIHelper.getAPIDefault() + "Users/" + patient.patientNavigation.account.accountId)
+        .delete(APIHelper.getAPIDefault() + "Users/" + patient.account.id)
         .catch(function (error) {
           console.log(error);
         });
@@ -277,7 +284,7 @@ export default {
 
 
 
-      this.patients.find((x) => x.patientId === patient.patientId).dltDialog.isShow = false;
+      this.patients.find((x) => x.id === patient.id).dltDialog.isShow = false;
       if (success) {
         if (this.page != 1) {
           this.page = 1;

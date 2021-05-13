@@ -44,14 +44,14 @@
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
             <v-img
-              v-if="temporaryData.patientNavigation.image != null"
+              v-if="temporaryData.image != null"
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.patientNavigation.image"
+              :src="temporaryData.image"
             ></v-img>
             <v-img
-              v-if="temporaryData.patientNavigation.image == null"
+              v-if="temporaryData.image == null"
               contain
               max-height="80%"
               max-width="80%"
@@ -98,7 +98,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.patientNavigation.fullName"
+                v-model="temporaryData.fullname"
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
@@ -110,7 +110,7 @@
               ></v-text-field>
               <v-radio-group
                 @change="onChange = true"
-                v-model="temporaryData.patientNavigation.gender"
+                v-model="temporaryData.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -121,7 +121,7 @@
               <v-dialog
                 ref="dialog"
                 v-model="modal"
-                :return-value.sync="temporaryData.patientNavigation.birthday"
+                :return-value.sync="temporaryData.birthday"
                 persistent
                 width="290px"
               >
@@ -139,10 +139,7 @@
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="temporaryData.patientNavigation.birthday"
-                  scrollable
-                >
+                <v-date-picker v-model="temporaryData.birthday" scrollable>
                   <v-spacer></v-spacer>
                   <v-btn text color="primary" @click="modal = false">
                     Cancel
@@ -150,14 +147,14 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="$refs.dialog.save(temporaryData.patientNavigation.birthday)"
+                    @click="$refs.dialog.save(temporaryData.birthday)"
                   >
                     OK
                   </v-btn>
                 </v-date-picker>
               </v-dialog>
 
-              <v-text-field
+              <!-- <v-text-field
                 @change="onChange = true"
                 class="pt-4"
                 solo
@@ -166,12 +163,12 @@
                 prepend-icon="mdi-phone"
                 required
                 disabled
-              ></v-text-field>
+              ></v-text-field> -->
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.patientNavigation.email"
+                v-model="temporaryData.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -181,7 +178,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.patientNavigation.idCard"
+                v-model="temporaryData.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -303,7 +300,7 @@ export default {
       imagePreview: defaultImage,
       show: false,
       loading: false,
-      bloodType: ["A", "B", "AB", "O", "Other"],
+      bloodType: ["A", "B", "AB", "O", "AB+", "A+", "Other"],
     };
   },
   components: {
@@ -318,7 +315,7 @@ export default {
       }
       this.fetchDependent();
     },
-      deleteDependent(success) {
+    deleteDependent(success) {
       if (success) {
         this.setSnackbar("Delete Successful", "success");
       } else {
@@ -365,7 +362,7 @@ export default {
 
     async fetchDependent() {
       this.dependents = [];
-      let id = this.temporaryData.patientNavigation.account.accountId;
+      let id = this.temporaryData.account.id;
       let response = await axios
         .get(APIHelper.getAPIDefault() + "Patients/" + id + "/Dependents")
         .catch(function (error) {
@@ -405,7 +402,6 @@ export default {
     },
 
     Cancel() {
-     
       if (this.onChange) {
         this.$confirm(
           "Do you really want to exit? Your change will all lost."
@@ -413,24 +409,24 @@ export default {
           if (res) {
             this.temporaryData = JSON.parse(JSON.stringify(this.patient));
             this.show = false;
-             this.$emit("cancel");
+            this.$emit("cancel");
           }
         });
       } else {
         this.show = false;
-         this.$emit("cancel");
+        this.$emit("cancel");
       }
     },
     changeSaved() {
       console.log(this.onChange);
     },
 
-        formatDate (date) {
-        if (!date) return null
+    formatDate(date) {
+      if (!date) return null;
 
-        const [year, month, day] = date.split('-')
-        return `${month}/${day}/${year}`
-      },
+      const [year, month, day] = date.split("-");
+      return `${month}/${day}/${year}`;
+    },
 
     async updatePatient() {
       this.$refs.form.validate();
@@ -444,23 +440,19 @@ export default {
       if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
-        this.temporaryData.patientNavigation.image = imgURL;
+        this.temporaryData.image = imgURL;
       }
 
-      let profileDetail = {
-        profileId: this.temporaryData.patientNavigation.profileId,
-        fullname: this.temporaryData.patientNavigation.fullName,
-        birthday: this.temporaryData.patientNavigation.birthday,
-        gender: this.temporaryData.patientNavigation.gender,
-        phone: this.temporaryData.patientNavigation.phone,
-        image: this.temporaryData.patientNavigation.image,
-        email: this.temporaryData.patientNavigation.email,
-        idCard: this.temporaryData.patientNavigation.idCard,
-      };
-      console.log(profileDetail);
-
       let profilePatient = {
-        patientId: this.temporaryData.patientId,
+        id: this.temporaryData.id,
+        fullname: this.temporaryData.fullname,
+        birthday: this.temporaryData.birthday,
+        image: this.temporaryData.image,
+        idCard: this.temporaryData.idCard,
+        email: this.temporaryData.email,
+        gender: this.temporaryData.gender,
+        location: this.temporaryData.location,
+        relationship: this.temporaryData.relationship,
         height:
           this.temporaryData.height == null || this.temporaryData.height == ""
             ? 0
@@ -470,21 +462,12 @@ export default {
             ? 0
             : this.temporaryData.weight,
         bloodType: this.temporaryData.bloodType,
-        profileId: this.temporaryData.profileId,
-        relationship: this.temporaryData.relationship,
-        accountId: this.temporaryData.accountId,
-        recordId: this.temporaryData.recordId,
+        accountId: this.temporaryData.account.id,
       };
 
       console.log(profilePatient);
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Patients", profilePatient)
-        .catch(function (error) {
-          console.log(error);
-        });
-
-      response = await axios
-        .put(APIHelper.getAPIDefault() + "Profiles", profileDetail)
         .catch(function (error) {
           console.log(error);
         });
@@ -501,11 +484,11 @@ export default {
       // await new Promise((resolve) => setTimeout(resolve, 500));
     },
   },
-   computed: {
-      computedDateFormatted () {
-        return this.formatDate(this.temporaryData.patientNavigation.birthday)
-      },
+  computed: {
+    computedDateFormatted() {
+      return this.formatDate(this.temporaryData.birthday);
     },
+  },
 
   watch: {
     show: function () {

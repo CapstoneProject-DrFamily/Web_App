@@ -69,7 +69,7 @@
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="temporaryData.serviceName"
+                v-model="temporaryData.name"
                 label="Service Name"
                 prepend-icon="mdi-ab-testing"
                 required
@@ -81,7 +81,7 @@
                 prepend-icon="mdi-needle"
                 :items="specialities"
                 item-text="name"
-                item-value="specialtyId"
+                item-value="id"
                 v-model="temporaryData.specialtyId"
                 label="Speciality*"
                 solo
@@ -91,17 +91,20 @@
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="temporaryData.servicePrice"
+                v-model.number="temporaryData.price"
                 label="Service Price"
                 prepend-icon="mdi-format-list-bulleted-type"
                 required
                 type="number"
-                :rules="[(v) => !!v || 'Please enter service price']"
+                :rules="[
+                  (v) => !!v || 'Please enter service price',
+                  (v) => Number.isInteger(v) || 'Must be integer',
+                ]"
               ></v-text-field>
               <v-textarea
                 @change="onChange = true"
                 class="pt-4"
-                v-model="temporaryData.serviceDescription"
+                v-model="temporaryData.description"
                 label="Service Description"
                 solo
                 prepend-icon="mdi-book-open-variant"
@@ -239,12 +242,17 @@ export default {
       console.log(this.temporaryData);
 
       var data = await axios
-        .delete(
-          APIHelper.getAPIDefault() + "Services/" + this.temporaryData.serviceId
-        )
+        .delete(APIHelper.getAPIDefault() + "Services/" + this.temporaryData.id)
         .catch(function (error) {
           console.log(error);
         });
+
+      if (data == undefined) {
+        this.resetForm();
+        this.show = false;
+        this.$emit("updated", isUpdated);
+        this.loading = false;
+      }
 
       var response = await axios
         .post(APIHelper.getAPIDefault() + "Services", this.temporaryData)

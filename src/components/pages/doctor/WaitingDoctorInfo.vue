@@ -28,7 +28,7 @@
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.doctorNavigation.image"
+              :src="temporaryData.doctor.image"
             ></v-img>
           </v-row>
           <v-row justify="center" v-if="imageData != null">
@@ -45,16 +45,16 @@
           <v-container>
             <v-form @submit.prevent>
               <div class="font-weight-bold customHeader">Account Detail</div>
-              <!-- <v-text-field
+              <v-text-field
                 class="pt-6"
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.doctorNavigation.account.username"
+                v-model="temporaryData.username"
                 label="Username"
                 prepend-icon="mdi-account-box"
                 required
-              ></v-text-field> -->
+              ></v-text-field>
 
               <v-text-field
                 @change="onChange = true"
@@ -62,19 +62,19 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.doctorNavigation.fullName"
+                v-model="temporaryData.doctor.fullname"
                 prepend-icon="mdi-account"
                 label="Name"
               ></v-text-field>
               <v-radio-group
                 readonly
                 @change="onChange = true"
-                v-model="temporaryData.doctorNavigation.gender"
+                v-model="temporaryData.doctor.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
                 <v-radio value="Male" label="Male"> </v-radio>
-                <v-radio value="Female" label="Female" > </v-radio>
+                <v-radio value="Female" label="Female"> </v-radio>
               </v-radio-group>
 
               <v-text-field
@@ -88,7 +88,7 @@
                 prepend-icon="mdi-calendar"
                 hint="MM/DD/YYYY format"
               ></v-text-field>
-
+              <!-- 
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
@@ -99,14 +99,14 @@
                 label="Phone"
                 prepend-icon="mdi-phone"
                 required
-              ></v-text-field>
+              ></v-text-field> -->
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.doctorNavigation.email"
+                v-model="temporaryData.doctor.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -118,7 +118,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.doctorNavigation.idCard"
+                v-model="temporaryData.doctor.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -133,7 +133,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.degree"
+                v-model="temporaryData.doctor.degree"
                 label="Degree"
                 prepend-icon="mdi-license"
                 required
@@ -144,7 +144,7 @@
                 filled
                 rounded
                 readonly
-                v-model="temporaryData.experience"
+                v-model="temporaryData.doctor.experience"
                 label="Experience"
                 prepend-icon="mdi-trophy-award"
                 required
@@ -155,8 +155,8 @@
                 prepend-icon="mdi-needle"
                 :items="specialities"
                 item-text="name"
-                item-value="specialtyId"
-                v-model="temporaryData.specialtyId"
+                item-value="id"
+                v-model="temporaryData.doctor.specialty.id"
                 label="Speciality"
                 filled
                 rounded
@@ -171,12 +171,12 @@
                 label="School"
                 prepend-icon="mdi-school"
                 required
-                v-model="temporaryData.school"
+                v-model="temporaryData.doctor.school"
               ></v-text-field>
               <v-textarea
                 @change="onChange = true"
                 class="pt-4"
-                v-model="temporaryData.description"
+                v-model="temporaryData.doctor.description"
                 label="Description"
                 filled
                 rounded
@@ -273,62 +273,84 @@ export default {
       }
     },
 
-    async denyDoctor() {
-      var isSuccess = false;
-      this.loading = true;
+    // async denyDoctor() {
+    //   var isSuccess = false;
+    //   this.loading = true;
 
-      let data = {
-        disabled: true,
-        accountId: this.doctor.doctorNavigation.account.accountId,
-        roleId: this.doctor.doctorNavigation.account.roleId,
-        profileId: this.doctor.doctorNavigation.profileId,
-        waiting: false,
-        username: this.doctor.doctorNavigation.account.username,
-      };
-      var response = await axios
-        .put(APIHelper.getAPIDefault() + "Users", data)
-        .catch(function (error) {
-          console.log(error);
-        });
+    //     let userModel = {
+    //     disabled: false,
+    //     insBy: false,
+    //     insDatetime: "2021-05-13T03:55:47.839Z",
+    //     updBy: "string",
+    //     updDatetime: "2021-05-13T03:55:47.839Z",
+    //     accountId: this.doctor.id,
+    //     username: this.doctor.doctorNavigation.account.username,
+    //     password: this.doctor.doctorNavigation.account.password,
+    //     roleId: 3,
+    //     waiting: false,
+    //     notiToken: "string",
+    //   };
 
-      if (response.status == 200) {
-        isSuccess = true;
-      }
-      this.show = false;
-      this.$emit("denied", isSuccess);
-      this.loading = false;
-    },
+    //   let data = {
+    //     userModel : userModel,
+    //     isAcceptDoctor : isApproved,
+    //     reason: null,
+    //   }
+    //   var response = await axios
+    //     .put(APIHelper.getAPIDefault() + "Users", data)
+    //     .catch(function (error) {
+    //       console.log(error);
+    //     });
+
+    //   if (response.status == 200) {
+    //     isSuccess = true;
+    //   }
+    //   this.show = false;
+    //   this.$emit("denied", isSuccess);
+    //   this.loading = false;
+    // },
     closeDialog() {
       this.show = false;
     },
-    async approveDoctor() {
-      var isApproved = false;
-      this.loading = true;
+    // async approveDoctor() {
+    //   var isApproved = false;
+    //   this.loading = true;
 
-      let data = {
-        disabled: false,
-        accountId: this.doctor.doctorNavigation.account.accountId,
-        roleId: this.doctor.doctorNavigation.account.roleId,
-        profileId: this.doctor.doctorNavigation.profileId,
-        waiting: false,
-        username: this.doctor.doctorNavigation.account.username,
-      };
-      var response = await axios
-        .put(
-          APIHelper.getAPIDefault() + "Users?isAcceptDoctor=" + isApproved,
-          data
-        )
-        .catch(function (error) {
-          console.log(error);
-        });
+    //   let userModel = {
+    //     disabled: false,
+    //     insBy: false,
+    //     insDatetime: "2021-05-13T03:55:47.839Z",
+    //     updBy: "string",
+    //     updDatetime: "2021-05-13T03:55:47.839Z",
+    //     accountId: this.doctor.id,
+    //     username: this.doctor.doctorNavigation.account.username,
+    //     password: this.doctor.doctorNavigation.account.password,
+    //     roleId: 3,
+    //     waiting: false,
+    //     notiToken: "string",
+    //   };
 
-      if (response.status == 200) {
-        isApproved = true;
-      }
-      this.show = false;
-      this.$emit("approved", isApproved);
-      this.loading = false;
-    },
+    //   let data = {
+    //     userModel : userModel,
+    //     isAcceptDoctor : isApproved,
+    //     reason: null,
+    //   }
+    //   var response = await axios
+    //     .put(
+    //       APIHelper.getAPIDefault() + "Users",
+    //       data
+    //     )
+    //     .catch(function (error) {
+    //       console.log(error);
+    //     });
+
+    //   if (response.status == 200) {
+    //     isApproved = true;
+    //   }
+    //   this.show = false;
+    //   this.$emit("approved", isApproved);
+    //   this.loading = false;
+    // },
     async fetchSpecialities() {
       var response = await axios
         .get(APIHelper.getAPIDefault() + "Specialties")
@@ -345,7 +367,7 @@ export default {
   },
   computed: {
     computedDateFormatted() {
-      return this.formatDate(this.temporaryData.doctorNavigation.birthday);
+      return this.formatDate(this.temporaryData.birthday);
     },
   },
   watch: {

@@ -58,17 +58,17 @@
         </thead>
 
         <tbody>
-          <tr v-for="doctor in doctors" :key="doctor.doctorId">
+          <tr v-for="doctor in doctors" :key="doctor.id">
             <td class="pt-6 pb-6">
               <v-img
-                :src="doctor.doctorNavigation.image"
+                :src="doctor.image"
                 width="100"
                 height="100"
               ></v-img>
             </td>
-            <td>{{ doctor.doctorNavigation.fullName }}</td>
+            <td>{{ doctor.fullname }}</td>
             <td>{{ doctor.specialty.name }}</td>
-            <td>{{ doctor.doctorNavigation.email }}</td>
+            <td>{{ doctor.email }}</td>
 
             <td>
               <edit-doctor-form
@@ -220,18 +220,19 @@ export default {
         this.totalPage = response.data.totalPages;
         console.log(response.data.doctors);
         for (let i = 0; i < response.data.doctors.length; i++) {
-          if (!response.data.doctors[i].doctorNavigation.account.waiting) {
-            let name = "dialog" + response.data.doctors[i].doctorId;
+          if (!response.data.doctors[i].idNavigation.waiting) {
+            let name = "dialog" + response.data.doctors[i].id;
             let dltDialog = { name: name, isShow: false };
             response.data.doctors[i].dltDialog = dltDialog;
-            response.data.doctors[i].doctorNavigation.birthday = response.data.doctors[
+            response.data.doctors[i].birthday = response.data.doctors[
               i
-            ].doctorNavigation.birthday.substring(0, 10);
+            ].birthday.substring(0, 10);
             this.doctors.push(response.data.doctors[i]);
           }
         }
         console.log(this.doctors.length);
       }
+
       this.loading = false;
     },
     updateDoctor(isUpdated) {
@@ -265,7 +266,7 @@ export default {
       // console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
-        .delete(APIHelper.getAPIDefault() + "Doctors/" + doctor.doctorId)
+        .delete(APIHelper.getAPIDefault() + "Doctors/" + doctor.id)
         .catch(function (error) {
           console.log(error);
         });
@@ -274,19 +275,19 @@ export default {
         success = true;
       }
 
-        var response1 = await axios
-        .delete(APIHelper.getAPIDefault() + "Users/" + doctor.doctorNavigation.account.accountId)
-        .catch(function (error) {
-          console.log(error);
-        });
+      //   var response1 = await axios
+      //   .delete(APIHelper.getAPIDefault() + "Users/" + doctor.id)
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
 
-         if (response1.status == 204) {
-        success = true;
-      }
+      //    if (response1.status == 204) {
+      //   success = true;
+      // }
 
 
 
-      this.doctors.find((x) => x.doctorId === doctor.doctorId).dltDialog.isShow = false;
+      this.doctors.find((x) => x.id === doctor.id).dltDialog.isShow = false;
       if (success) {
          if (this.page != 1) {
           this.page = 1;

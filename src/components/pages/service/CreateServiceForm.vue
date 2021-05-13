@@ -53,7 +53,7 @@
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="createData.serviceName"
+                v-model="createData.name"
                 label="Service Name"
                 prepend-icon="mdi-ab-testing"
                 required
@@ -65,7 +65,7 @@
                 prepend-icon="mdi-needle"
                 :items="specialities"
                 item-text="name"
-                item-value="specialtyId"
+                item-value="id"
                 v-model="createData.specialtyId"
                 label="Speciality"
                 solo
@@ -75,17 +75,17 @@
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="createData.servicePrice"
+                v-model.number="createData.price"
                 label="Service Price"
                 prepend-icon="mdi-format-list-bulleted-type"
                 required
                 type="number"
-                :rules="[(v) => !!v || 'Please enter service price']"
+                :rules="[(v) => !!v || 'Please enter service price', (v) => Number.isInteger(v) || 'Must be integer',]"
               ></v-text-field>
               <v-textarea
                 @change="onChange = true"
                 class="pt-4"
-                v-model="createData.serviceDescription"
+                v-model="createData.description"
                 label="Service Description"
                 solo
                 prepend-icon="mdi-book-open-variant"
@@ -155,9 +155,9 @@ export default {
     return {
       valid: false,
       createData: {
-        serviceName: null,
-        servicePrice: null,
-        serviceDescription: null,
+        name: null,
+        price: null,
+        description: null,
         specialtyId: null,
         image: null,
         isDefault: false,
@@ -185,7 +185,7 @@ export default {
           this.specialities.push(response.data[i]);
         }
 
-        this.createData.specialtyId = this.specialities[0];
+        this.createData.specialtyId = this.specialities[0]["id"];
       }
     },
     cancel() {
@@ -212,6 +212,8 @@ export default {
         console.log(imgURL);
         this.createData.image = imgURL;
       }
+
+      console.log(this.createData);
 
       if (this.createData.image == null) {
         this.createData.image =

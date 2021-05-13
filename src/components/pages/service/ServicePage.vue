@@ -57,7 +57,7 @@
         </thead>
 
         <tbody>
-          <tr v-for="service in services" :key="service.serviceId">
+          <tr v-for="service in services" :key="service.id">
             <td class="pt-6 pb-6" v-if="service.image != null">
               <v-img :src="service.image" width="100" height="100"></v-img>
             </td>
@@ -68,10 +68,10 @@
                 height="100"
               ></v-img>
             </td>
-            <td>{{ service.serviceName }}</td>
-            <td>{{ service.servicePrice }} VNĐ</td>
+            <td>{{ service.name }}</td>
+            <td>{{ service.price }} VNĐ</td>
       
-            <td>{{ getDescription(service.serviceDescription) }}  </td>
+            <td>{{ getDescription(service.description) }}  </td>
 
             <td>
               <edit-service-form
@@ -116,7 +116,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteService(service.serviceId)"
+                        @click.prevent="deleteService(service.id)"
                       >
                         I accept
                       </v-btn>
@@ -230,11 +230,16 @@ export default {
         console.log(error);
       });
 
+      if(response == undefined) {
+        this.loading = false;
+        return ;
+      }
+
       if (response.status == 200) {
         this.totalPage = response.data.totalPages;
         for (let i = 0; i < response.data.services.length; i++) {
           if (!response.data.services[i].disable) {
-            let name = "dialog" + response.data.services[i].serviceId;
+            let name = "dialog" + response.data.services[i].id;
             let dltDialog = { name: name, isShow: false };
             response.data.services[i].dltDialog = dltDialog;
             this.services.push(response.data.services[i]);
@@ -284,7 +289,7 @@ export default {
         success = true;
       }
 
-      this.services.find((x) => x.serviceId === id).dltDialog.isShow = false;
+      this.services.find((x) => x.id === id).dltDialog.isShow = false;
       if (success) {
         if (this.page != 1) {
           this.page = 1;

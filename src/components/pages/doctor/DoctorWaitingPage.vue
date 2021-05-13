@@ -95,18 +95,18 @@
         </thead>
 
         <tbody>
-          <tr v-for="doctor in doctors" :key="doctor.doctorId">
+          <tr v-for="doctor in doctors" :key="doctor.id">
             <td class="pt-6 pb-6">
               <v-img
-                :src="doctor.doctorNavigation.image"
+                :src="doctor.doctor.image"
                 width="100"
                 height="100"
               ></v-img>
             </td>
 
-            <td>{{ doctor.doctorNavigation.fullName }}</td>
-            <td>{{ doctor.specialty.name }}</td>
-            <td>{{ doctor.doctorNavigation.email }}</td>
+            <td>{{ doctor.doctor.fullname }}</td>
+            <td>{{ doctor.doctor.specialty.name }}</td>
+            <td>{{ doctor.doctor.email }}</td>
 
             <td>
               <waiting-doctor-info
@@ -193,10 +193,10 @@ export default {
   },
   methods: {
     async denyDoctor() {
-         this.$refs.form.validate();
-          if (!this.valid) {
-            return;
-          }
+      this.$refs.form.validate();
+      if (!this.valid) {
+        return;
+      }
       this.loadingDenying = true;
       await this.approveDoctor(this.doctorDeny, false);
       this.loadingDenying = false;
@@ -224,7 +224,6 @@ export default {
     confirmDeny(doctor) {
       this.$confirm("Do you want to deny this doctor ?").then((res) => {
         if (res) {
-       
           console.log(doctor);
           this.dialogReason = true;
           this.doctorDeny = doctor;
@@ -248,21 +247,24 @@ export default {
     async approveDoctor(doctor, isApprove) {
       let userModel = {
         disabled: isApprove == true ? false : true,
-        accountId: doctor.doctorNavigation.account.accountId,
-        roleId: doctor.doctorNavigation.account.roleId,
-        profileId: doctor.doctorNavigation.profileId,
+        insBy: doctor.insBy,
+        insDatetime: doctor.insDatetime,
+        updBy: doctor.updBy,
+        updDatetime: doctor.updDatetime,
+        accountId: doctor.id,
+        username: doctor.username,
+        password: doctor.password,
+        roleId: doctor.roleId,
         waiting: false,
-        username: doctor.doctorNavigation.account.username,
+        notiToken: doctor.notiToken,
       };
-
-
 
       let data = {
         userModel: userModel,
         isAcceptDoctor: true,
         reason: this.reasonDeny,
       };
-            console.log(data);
+      console.log(data);
 
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Users", data)
@@ -288,19 +290,25 @@ export default {
           console.log(error);
         });
 
+      if (response == undefined) {
+        this.loading = false;
+        return;
+      }
+
       if (response.status == 200) {
         for (let i = 0; i < response.data.length; i++) {
-          let name = "dialog" + response.data[i].doctorId;
+          let name = "dialog" + response.data[i].id;
           let dltDialog = { name: name, isShow: false };
           response.data[i].dltDialog = dltDialog;
-          response.data[i].doctorNavigation.birthday = response.data[
+          response.data[i].birthday = response.data[
             i
-          ].doctorNavigation.birthday.substring(0, 10);
+          ].doctor.birthday.substring(0, 10);
           // let data = response.data[i];
           // console.log(data);
           this.doctors.push(response.data[i]);
         }
       }
+      console.log(this.doctors);
       this.loading = false;
     },
 

@@ -21,6 +21,14 @@ class CommonHelper {
           return imgURL;
     }
 
+    static getLocation(location) {
+      let data = location.split(";");
+      let temp = data[1];
+      let address = temp.split(":");
+
+      return address[1].toString();
+    }
+
     static removeItem(arr, item) {
       return arr.filter(f => f.doctorId !== item.doctorId);
       

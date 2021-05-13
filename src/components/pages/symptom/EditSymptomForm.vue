@@ -64,7 +64,7 @@
         <v-card-text>
           <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
-              <div class="font-weight-bold customHeader">Symptom</div>
+              <div class="font-weight-bold customHeader">Speciality</div>
               <v-text-field
                 @change="onChange = true"
                 class="pt-6"

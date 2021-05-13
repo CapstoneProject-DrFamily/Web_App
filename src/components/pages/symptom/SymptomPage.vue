@@ -65,7 +65,7 @@
               ></v-img>
             </td>
             <td>{{ symptom.name }}</td>
-            <td>{{ symptom.description.substring(0, 20) }}...</td>
+            <td>{{ getDescription(symptom.description) }}</td>
 
             <td>
               <edit-symptom-form
@@ -110,7 +110,7 @@
                         :loading="isDeleting"
                         :disabled="isDeleting"
                         text
-                        @click.prevent="deleteSymptom(symptom.specialtyId)"
+                        @click.prevent="deleteSymptom(symptom.id)"
                       >
                         I accept
                       </v-btn>
@@ -180,6 +180,14 @@ export default {
     };
   },
   methods: {
+      getDescription(description) {
+        if(description.length < 20) {
+          return description;
+        } else {
+          return description.substring(0, 20) + "...";
+        }
+    },
+
     searchSymptom() {
       this.searchValue = this.searchBoxValue;
       if (this.page != 1) {
@@ -218,7 +226,7 @@ export default {
         this.totalPage = response.data.totalPages;
         for (let i = 0; i < response.data.specialties.length; i++) {
           if (!response.data.specialties[i].disable) {
-            let name = "dialog" + response.data.specialties[i].specialtyId;
+            let name = "dialog" + response.data.specialties[i].id;
             let dltDialog = { name: name, isShow: false };
             response.data.specialties[i].dltDialog = dltDialog;
             this.symptoms.push(response.data.specialties[i]);
@@ -257,7 +265,7 @@ export default {
       var success = false;
       this.isDeleting = true;
 
-      // console.log(id);
+      console.log(id);
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       var response = await axios
         .delete(APIHelper.getAPIDefault() + "Specialties/" + id)
@@ -269,7 +277,7 @@ export default {
         success = true;
       }
 
-      this.symptoms.find((x) => x.specialtyId === id).dltDialog.isShow = false;
+      this.symptoms.find((x) => x.id === id).dltDialog.isShow = false;
       if (success) {
         if (this.page != 1) {
           this.page = 1;

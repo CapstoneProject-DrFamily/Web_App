@@ -25,15 +25,15 @@
         <v-card-text>
           <v-row justify="center" v-if="imageData == null">
             <v-img
-              v-if="temporaryData.doctorNavigation.image != null"
+              v-if="temporaryData.image != null"
               contain
               max-height="80%"
               max-width="80%"
-              :src="temporaryData.doctorNavigation.image"
+              :src="temporaryData.image"
             ></v-img>
 
             <v-img
-              v-if="temporaryData.doctorNavigation.image == null"
+              v-if="temporaryData.image == null"
               contain
               max-height="80%"
               max-width="80%"
@@ -64,23 +64,23 @@
           <v-container>
             <v-form @submit.prevent ref="form" v-model="valid">
               <div class="font-weight-bold customHeader">Account Detail</div>
-              <!-- <v-text-field
+              <v-text-field
                 @change="onChange = true"
                 class="pt-6"
                 solo
-                v-model="temporaryData.doctorNavigation.account.username"
+                v-model="temporaryData.idNavigation.username"
                 readonly
                 label="Username (Your phone number)*"
                 prepend-icon="mdi-account-box"
                 required
                 disabled
-              ></v-text-field> -->
+              ></v-text-field>
 
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.doctorNavigation.fullName"
+                v-model="temporaryData.fullname"
                 prepend-icon="mdi-account"
                 label="Full Name*"
                 required
@@ -92,7 +92,7 @@
               ></v-text-field>
               <v-radio-group
                 @change="onChange = true"
-                v-model="temporaryData.doctorNavigation.gender"
+                v-model="temporaryData.gender"
                 row
                 prepend-icon="mdi-gender-male-female"
               >
@@ -103,7 +103,7 @@
               <v-dialog
                 ref="dialog"
                 v-model="modal"
-                :return-value.sync="temporaryData.doctorNavigation.birthday"
+                :return-value.sync="temporaryData.birthday"
                 persistent
                 width="290px"
               >
@@ -113,7 +113,6 @@
                     class="pt-4"
                     solo
                     v-model="computedDateFormatted"
-                   
                     label="Birthday*"
                     prepend-icon="mdi-calendar"
                     hint="MM/DD/YYYY format"
@@ -122,10 +121,7 @@
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="temporaryData.doctorNavigation.birthday"
-                  scrollable
-                >
+                <v-date-picker v-model="temporaryData.birthday" scrollable>
                   <v-spacer></v-spacer>
                   <v-btn text color="primary" @click="modal = false">
                     Cancel
@@ -133,30 +129,28 @@
                   <v-btn
                     text
                     color="primary"
-                    @click="
-                      $refs.dialog.save(temporaryData.doctorNavigation.birthday)
-                    "
+                    @click="$refs.dialog.save(temporaryData.birthday)"
                   >
                     OK
                   </v-btn>
                 </v-date-picker>
               </v-dialog>
 
-              <v-text-field
+              <!-- <v-text-field
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.doctorNavigation.phone"
+                v-model="temporaryData.phone"
                 label="Phone*"
                 prepend-icon="mdi-phone"
                 required
                 disabled
-              ></v-text-field>
+              ></v-text-field> -->
               <v-text-field
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.doctorNavigation.email"
+                v-model="temporaryData.email"
                 label="Email"
                 type="email"
                 prepend-icon="mdi-email"
@@ -166,7 +160,7 @@
                 @change="onChange = true"
                 class="pt-4"
                 solo
-                v-model="temporaryData.doctorNavigation.idCard"
+                v-model="temporaryData.idCard"
                 label="ID Card"
                 prepend-icon="mdi-card-account-details"
                 type="number"
@@ -198,6 +192,7 @@
                 label="Experience*"
                 prepend-icon="mdi-trophy-award"
                 required
+                type="number"
                 :rules="[
                   (v) =>
                     (v.length < 50 && v.length > 0) ||
@@ -209,8 +204,8 @@
                 prepend-icon="mdi-needle"
                 :items="specialities"
                 item-text="name"
-                item-value="specialtyId"
-                v-model="temporaryData.specialtyId"
+                item-value="id"
+                v-model="temporaryData.specialty.id"
                 label="Speciality*"
                 solo
               ></v-select>
@@ -237,10 +232,7 @@
                 solo
                 :rules="[
                   (v) =>
-                    (v.length > 3) ||
-                    'Your description must be filled',
-                     (v) =>
-                    (!vv && v.length < 255) ||
+                    (v.length > 3 && v.length < 255) ||
                     'Your description must between 3 ~ 255 character',
                 ]"
                 prepend-icon="mdi-account-details"
@@ -308,7 +300,7 @@ export default {
       imagePreview: defaultImage,
       show: false,
       loading: false,
-      DOB: '',
+      DOB: "",
       schools: [
         "Hanoi Medical University",
         "University of Medicine And Pharmacy at HCMC",
@@ -365,6 +357,7 @@ export default {
           this.specialities.push(response.data[i]);
         }
       }
+      console.log(this.specialities);
     },
 
     async updateDoctor() {
@@ -379,38 +372,26 @@ export default {
       if (this.imageData != null) {
         var imgURL = await CommonHelper.uploadStorageFirebase(this.imageData);
         console.log(imgURL);
-        this.temporaryData.doctorNavigation.image = imgURL;
+        this.temporaryData.image = imgURL;
       }
 
-      let profileDetail = {
-        profileId: this.temporaryData.doctorNavigation.profileId,
-        fullname: this.temporaryData.doctorNavigation.fullName,
-        birthday: this.temporaryData.doctorNavigation.birthday,
-        gender: this.temporaryData.doctorNavigation.gender,
-        phone: this.temporaryData.doctorNavigation.phone,
-        image: this.temporaryData.doctorNavigation.image,
-        email: this.temporaryData.doctorNavigation.email,
-        idCard: this.temporaryData.doctorNavigation.idCard,
-      };
-
       let profileDoctor = {
-        doctorId: this.temporaryData.doctorId,
+        id: this.temporaryData.id,
+        fullname: this.temporaryData.fullname,
+        birthday: this.temporaryData.birthday,
+        gender: this.temporaryData.gender,
+        image: this.temporaryData.image,
+        email: this.temporaryData.email,
+        idCard: this.temporaryData.idCard,
         degree: this.temporaryData.degree,
         experience: this.temporaryData.experience,
         description: this.temporaryData.description,
-        specialtyId: this.temporaryData.specialtyId,
-        profileId: this.temporaryData.profileId,
+        specialtyId: this.temporaryData.specialty.id,
         school: this.temporaryData.school,
       };
 
       var response = await axios
         .put(APIHelper.getAPIDefault() + "Doctors", profileDoctor)
-        .catch(function (error) {
-          console.log(error);
-        });
-
-      response = await axios
-        .put(APIHelper.getAPIDefault() + "Profiles", profileDetail)
         .catch(function (error) {
           console.log(error);
         });
@@ -430,12 +411,12 @@ export default {
       this.imageData = null;
       this.imagePreview = defaultImage;
     },
-     formatDate (date) {
-        if (!date) return null
+    formatDate(date) {
+      if (!date) return null;
 
-        const [year, month, day] = date.split('-')
-        return `${month}/${day}/${year}`
-      },
+      const [year, month, day] = date.split("-");
+      return `${month}/${day}/${year}`;
+    },
   },
   watch: {
     imageData: function () {
@@ -454,10 +435,10 @@ export default {
     },
   },
   computed: {
-      computedDateFormatted () {
-        return this.formatDate(this.temporaryData.doctorNavigation.birthday)
-      },
+    computedDateFormatted() {
+      return this.formatDate(this.temporaryData.birthday);
     },
+  },
 };
 </script>
 

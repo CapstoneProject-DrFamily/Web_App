@@ -297,7 +297,7 @@
                 text
                 icon
                 color="red"
-                @click="remove(item.medicine.medicineId)"
+                @click="remove(item.medicine.id)"
               >
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
@@ -308,7 +308,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-row>
                 <v-col class="d-flex justify-center pt-10 pb-10">
-                  <v-btn color="success" v-bind="attrs" v-on="on" @click="validateMedicine">
+                  <v-btn color="success" v-bind="attrs" v-on="on">
                     Create
                   </v-btn></v-col
                 >
@@ -411,7 +411,7 @@ export default {
       disease: null,
 
       medicine: {
-        medicineId: null,
+        id: null,
         form: null,
         strength: null,
         name: null,
@@ -455,7 +455,7 @@ export default {
   methods: {
     remove(medicineId) {
       this.template = this.template.filter(
-        (item) => item.medicine.medicineId != medicineId
+        (item) => item.medicine.id != medicineId
       );
     },
 
@@ -493,7 +493,7 @@ export default {
         let detail = this.template[i]["prescriptionDetail"];
         detail["prescriptionDetailId"] = 0;
         detail["prescriptionId"] = null;
-        detail["medicineId"] = this.template[i]["medicine"]["medicineId"];
+        detail["medicineId"] = this.template[i]["medicine"]["id"];
 
         console.log(this.template[i]["medicine"]);
         detail["medicine"] = this.template[i]["medicine"];
@@ -558,10 +558,11 @@ export default {
         return;
       }
 
+      console.log(this.medicine);
       // check if already in template
       for (let i = 0; i < this.template.length; i++) {
         console.log(this.template[i]);
-        if (this.template[i].medicine.medicineId == this.medicine.medicineId) {
+        if (this.template[i].medicine.id == this.medicine.id) {
           this.setSnackbar(
             "Add failed. This medicine already in template",
             "error"

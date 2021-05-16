@@ -409,7 +409,7 @@ export default {
       for (let i = 0; i < template.data.prescriptionDetails.length; i++) {
         if (
           template.data.prescriptionDetails[i].medicineId ==
-          this.medicine.medicineId
+          this.medicine.id
         ) {
           this.setSnackbar(
             "Add failed. This medicine already in template",
@@ -423,7 +423,7 @@ export default {
         return;
       }
       this.prescriptionDetail.medicine = this.medicine;
-      this.prescriptionDetail.medicineId = this.medicine.medicineId;
+      this.prescriptionDetail.medicineId = this.medicine.id;
       this.prescriptionDetail.prescriptionDetailId = 0;
       this.prescriptionDetail.prescriptionId = null;
       this.prescriptionDetail.totalQuantity = 0;
